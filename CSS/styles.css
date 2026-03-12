@@ -1,0 +1,13 @@
+
+.avatares { display:flex; gap:10px; margin-top:8px; }
+.avatar { display:inline-block; cursor:pointer; }
+.avatar input { display:none; }
+.avatar img {
+    width:10px; height:10px; object-fit:cover;
+    border:2px solid transparent; border-radius:4px;
+    transition:box-shadow .15s, border-color .15s, transform .12s;
+}
+.avatar:hover img { transform:translateY(-1px); }
+.avatar input:checked + img {
+    border-color:#3aa; box-shadow:0 0 6px rgba(50,170,170,0.35);
+}

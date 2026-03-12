@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bejeweled</title>
+        <script src="scripts.js"></script>
+        <link rel="stylesheet" href="CSS/styles.css">
+    </head>
+    <body>
+        <h1>Bem-vindo ao Bejeweled - Registar</h1>
+        
+        
+        <div id="registo"></div> <!--escolha de fazer login ou iniciar sessão-->
+            
+        <form>
+            <label for="email">Email: </label>
+            <input type="email" id="email" name="email">
+        
+            <label>Palavra-passe: </label>
+            <input type="password" id="password" name="password"> 
+        
+            <label>Confirmar Palavra-Passe: </label>
+            <input type="password" id="password2" name="password2"> 
+        
+            <label>Data de nascimento (DD-MM-YYYY) </label>
+            <input type="date" id="data-de-nascimento" name="data-de-nascimento">
+
+            <label for="avatar">Escolhe o teu avatar: </label>
+            <select id="avatar" name="avatar">
+                <option value="">Seleciona...</option>
+                <option value="avatar1">Avatar 1</option>
+                <option value="avatar2">Avatar 2</option>
+                <option value="avatar3">Avatar 3</option>
+                
+            </select>
+
+            <div class="avatares">
+                <label class="avatar">
+                    <input type="radio" name="avatar" value="a.png" required>
+                    <img src="../Mídia/a.png" alt="avatar a">
+                </label>
+                <label class="avatar">
+                    <input type="radio" name="avatar" value="b.png">
+                    <img src="../Mídia/b.png" alt="avatar b">
+                </label>
+                <label class="avatar">
+                    <input type="radio" name="avatar" value="c.png">
+                    <img src="../Mídia/c.png" alt="avatar c">
+                </label>
+                <label class="avatar">
+                    <input type="radio" name="avatar" value="d.png">
+                    <img src="../Mídia/d.png" alt="avatar d">
+                </label>
+                <!--  -->
+            </div>
+
+        </form>
+
+
+
+            
+        
+        <div id="registar">
+            <p>Email:</p>
+            <input>
+            <br>
+            <p>Palavra-passe:</p>
+            <input>
+            <P>Confirmar Palavra-Passe:</P>
+            <input>
+            <p>Data de nascimento (DD-MM-YYYY)</p>
+            <input width="10px">/<input width="10px">/<input width="20px">
+        </div>
+        <div id="iniciar_sessao"></div>
+        <div id="jogo"></div>
+        <div id="resultados"></div>
+    </body>
+</html>

@@ -187,3 +187,8 @@ input {
 #menu_tbl, #hint_tbl {
     background-color: pink;
 }
+
+#tabuleiro {
+    display: flex;
+    justify-content: space-between;
+}

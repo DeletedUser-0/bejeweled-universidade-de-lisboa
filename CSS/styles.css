@@ -11,6 +11,36 @@
     border-color:#3aa; box-shadow:0 0 6px rgba(50,170,170,0.35);
 }
 
+#menu {
+    text-align: center;
+    font-size: 300%;
+}
+#menu-title {
+    background-color: lightgray;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.Menu-Buttons{
+    color:blue;
+    font-size: 80%;
+    cursor: pointer;
+    margin-top:2%;
+}
+.Menu-Buttons:hover{
+    color:red;
+}
+.Menu-Nome{
+    margin-top:2%;
+    font-size:200%;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    background-color: lightgray;
+}
+
+
+
+
+
+
+
 #menu_tbl, #hint_tbl {
     background-color: pink;
 }

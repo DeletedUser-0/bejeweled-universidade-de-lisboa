@@ -11,7 +11,7 @@
          <button id="muteBtn" class="mute-btn" aria-pressed="false" title="Mudo/Ativar som">🔊</button>
 
         <!-- áudio de fundo: coloque o ficheiro ../Mídia/music.mp3 -->
-        <audio id="bgMusic" src="../Mídia/music.mp3" controls></audio>
+        <audio id="bgMusic" src="Mídia/music.mp3" controls></audio>
         
         <div id="registo"></div> <!--escolha de fazer login ou iniciar sessão-->
             
@@ -27,7 +27,9 @@
         
             <label>Data de nascimento (DD-MM-YYYY) </label>
             <input type="date" id="data-de-nascimento" name="data-de-nascimento">
+            
 
+            <!-- 
             <label for="avatar">Escolhe o teu avatar: </label>
             <select id="avatar" name="avatar">
                 <option value="">Seleciona...</option>
@@ -35,26 +37,28 @@
                 <option value="avatar2">Avatar 2</option>
                 <option value="avatar3">Avatar 3</option>
                 
-            </select>
+            </select> -->
 
-            <div class="avatares">
-                <label class="avatar">
-                    <input type="radio" name="avatar" value="a.png" required>
-                    <img src="../Mídia/a.png" alt="avatar a">
-                </label>
-                <label class="avatar">
-                    <input type="radio" name="avatar" value="b.png">
-                    <img src="../Mídia/b.png" alt="avatar b">
-                </label>
-                <label class="avatar">
-                    <input type="radio" name="avatar" value="c.png">
-                    <img src="../Mídia/c.png" alt="avatar c">
-                </label>
-                <label class="avatar">
-                    <input type="radio" name="avatar" value="d.png">
-                    <img src="../Mídia/d.png" alt="avatar d">
-                </label>
-                <!--  -->
+            <div class="avatar-container">
+                <div class="avatares">
+                    <label class="avatar">
+                        <input type="radio" name="avatar" value="a.png" required>
+                        <img src="Mídia/a.png" alt="avatar a">
+                    </label>
+                    <label class="avatar">
+                        <input type="radio" name="avatar" value="b.png">
+                        <img src="Mídia/b.png" alt="avatar b">
+                    </label>
+                    <label class="avatar">
+                        <input type="radio" name="avatar" value="c.png">
+                        <img src="Mídia/c.png" alt="avatar c">
+                    </label>
+                    <label class="avatar">
+                        <input type="radio" name="avatar" value="d.png">
+                        <img src="Mídia/d.png" alt="avatar d">
+                    </label>
+                    <!--  -->
+                </div>
             </div>
 
         </form>
@@ -62,20 +66,5 @@
 
 
             
-        
-        <div id="registar">
-            <p>Email:</p>
-            <input>
-            <br>
-            <p>Palavra-passe:</p>
-            <input>
-            <P>Confirmar Palavra-Passe:</P>
-            <input>
-            <p>Data de nascimento (DD-MM-YYYY)</p>
-            <input width="10px">/<input width="10px">/<input width="20px">
-        </div>
-        <div id="iniciar_sessao"></div>
-        <div id="jogo"></div>
-        <div id="resultados"></div>
     </body>
 </html>

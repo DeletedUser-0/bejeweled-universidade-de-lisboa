@@ -125,7 +125,6 @@ input {
 }
 #menu-title {
     background-color: lightgray;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 .Menu-Buttons{
     color:blue;
@@ -139,7 +138,6 @@ input {
 .Menu-Nome{
     margin-top:2%;
     font-size:200%;
-    font-family:Verdana, Geneva, Tahoma, sans-serif;
     background-color: lightgray;
 }
 

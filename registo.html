@@ -1,33 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
         <title>Bejeweled</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+        <script src="scripts.js"></script>
+        <link rel="stylesheet" href="CSS/styles.css">
     </head>
     <body>
         <h1>Bem-vindo ao Bejeweled - Registar</h1>
-
-        <button id="muteBtn" class="mute-btn" aria-pressed="false" title="Mudo/Ativar som">🔊</button>
-
-        <!-- áudio de fundo: coloque o ficheiro ../Media/music.mp3 -->
-        <audio autoplay id="bgMusic" src="Media/music.mp3" controls loop></audio>
         
-        <div id="registo"></div> <!--escolha de fazer login ou iniciar sessão-->
+         <button id="muteBtn" class="mute-btn" aria-pressed="false" title="Mudo/Ativar som">🔊</button>
+
+        <!-- áudio de fundo:  ../Media/music.mp3 -->
+        <audio id="bgMusic" src="Media/music.mp3" controls></audio>
+        
+        <div id="registo"></div> 
             
         <form>
             <label for="email">Email: </label>
-            <input type="email" id="email" name="email" />
-
+            <input type="email" id="email" name="email">
+        
             <label>Palavra-passe: </label>
-            <input type="password" id="password" name="password" />
-
+            <input type="password" id="password" name="password"> 
+        
             <label>Confirmar Palavra-Passe: </label>
-            <input type="password" id="password2" name="password2" />
-
+            <input type="password" id="password2" name="password2"> 
+        
             <label>Data de nascimento (DD-MM-YYYY) </label>
-            <input type="date" id="data-de-nascimento" name="data-de-nascimento" />
+            <input type="date" id="data-de-nascimento" name="data-de-nascimento">
+            
 
             <!-- 
             <label for="avatar">Escolhe o teu avatar: </label>
@@ -42,25 +42,31 @@
             <div class="avatar-container">
                 <div class="avatares">
                     <label class="avatar">
-                        <input type="radio" name="avatar" value="a.png" required />
-                        <img src="Media/a.png" alt="avatar a" />
+                        <input type="radio" name="avatar" value="a.png" required>
+                        <img src="Media/a.png" alt="avatar a">
                     </label>
                     <label class="avatar">
-                        <input type="radio" name="avatar" value="b.png" />
-                        <img src="Media/b.png" alt="avatar b" />
+                        <input type="radio" name="avatar" value="b.png">
+                        <img src="Media/b.png" alt="avatar b">
                     </label>
                     <label class="avatar">
-                        <input type="radio" name="avatar" value="c.png" />
-                        <img src="Media/c.png" alt="avatar c" />
+                        <input type="radio" name="avatar" value="c.png">
+                        <img src="Media/c.png" alt="avatar c">
                     </label>
                     <label class="avatar">
-                        <input type="radio" name="avatar" value="d.png" />
-                        <img src="Media/d.png" alt="avatar d" />
+                        <input type="radio" name="avatar" value="d.png">
+                        <img src="Media/d.png" alt="avatar d">
                     </label>
                     <!--  -->
                 </div>
             </div>
-
+            <div class="botao-registo-container" style="text-align:center; margin-top:20px;">
+                <a href="index.html" class="botoes-do-registo">Efetuar Registo</a>
+            </div>
         </form>
+
+
+
+            
     </body>
 </html>

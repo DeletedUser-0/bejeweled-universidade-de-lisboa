@@ -117,6 +117,26 @@ input {
     background-color: #45a049;
 }
 
+/* Botão de login: mesmo estilo de .botoes-do-registo, classe diferente */
+.botao-login {
+    display: inline-block;
+    padding: 15px 30px;
+    margin: 10px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 0;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.botao-login:hover {
+    background-color: #45a049;
+}
+
 
 
 #menu {

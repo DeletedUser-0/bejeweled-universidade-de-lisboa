@@ -195,3 +195,85 @@ input {
     text-align: center;
     font-size: 400%;
 }
+
+/* ----- SINGLEPLAYER PAGE STYLES ----- */
+.singleplayer-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+    gap: 2rem;
+}
+
+.singleplayer-title {
+    font-size: clamp(2rem, 8vw, 4rem);
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+.singleplayer-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.singleplayer-label {
+    font-size: clamp(1.1rem, 5vw, 1.5rem);
+    font-weight: bold;
+}
+
+.singleplayer-buttons-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.botao-singleplayer {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    font-size: clamp(0.9rem, 4vw, 1.1rem);
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: none;
+    cursor: pointer;
+    font-family: "VT323", monospace;
+}
+
+.botao-singleplayer:hover {
+    background-color: #45a049;
+}
+
+.botao-jogar-singleplayer {
+    display: inline-block;
+    padding: 18px 40px;
+    background-color: #dc3545;
+    color: white;
+    text-decoration: none;
+    font-size: clamp(1.2rem, 6vw, 1.8rem);
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: none;
+    cursor: pointer;
+    font-family: "VT323", monospace;
+    margin-top: 1rem;
+}
+
+.botao-jogar-singleplayer:hover {
+    background-color: #c82333;
+}

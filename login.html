@@ -2,10 +2,16 @@
 <html>
     <head>
         <title>Bejeweled</title>
-        <script src="scripts.js"></script>
         <link rel="stylesheet" href="CSS/styles.css">
     </head>
     <body>
+        
+        <a class="nav-back" href="index.html"><img src="Media/seta_tras.png" alt="Voltar"></a>
+        <audio class="bg-music" src="Media/music.mp3"></audio>
+        <button type="button" class="music-toggle">
+            <img class="music-toggle__icon" src="Media/mute.png" alt="">
+        </button>
+        
         <div class="index-container">
             <img src="Media/logo.png" alt="Logo Bejeweled" class="logo-login">
         
@@ -23,11 +29,10 @@
             </form>
 
             <!-- Botão Efetuar Login: navega para menu.html -->
-            <div style="text-align:center; margin-top:10px;">
+            <div class="login-actions">
                 <button type="button" class="botao-login" onclick="window.location.href='menu.html'">Efetuar Login</button>
             </div>
         </div>
-        
-        
+        <script src="JavaScript/scripts.js"></script>
     </body>
 </html>

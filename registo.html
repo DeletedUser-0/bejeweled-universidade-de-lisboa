@@ -2,16 +2,20 @@
 <html>
     <head>
         <title>Bejeweled</title>
-        <script src="scripts.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="CSS/styles.css">
     </head>
     <body>
-        <h1>Bem-vindo ao Bejeweled - Registar</h1>
         
-         <button id="muteBtn" class="mute-btn" aria-pressed="false" title="Mudo/Ativar som">🔊</button>
-
-        <!-- áudio de fundo:  ../Media/music.mp3 -->
-        <audio id="bgMusic" src="Media/music.mp3" controls></audio>
+        <a class="nav-back" href="index.html"><img src="Media/seta_tras.png" alt="Voltar"></a>
+        <audio class="bg-music" src="Media/music.mp3"></audio>
+        <button type="button" class="music-toggle">
+            <img class="music-toggle__icon" src="Media/mute.png" alt="">
+        </button>
+        <script src="JavaScript/scripts.js"></script>
+        <h1>Bem-vindo ao Bejeweled - Registar</h1>
         
         <div id="registo"></div> 
             
@@ -60,7 +64,7 @@
                     <!--  -->
                 </div>
             </div>
-            <div class="botao-registo-container" style="text-align:center; margin-top:20px;">
+            <div class="botao-registo-container">
                 <a href="index.html" class="botoes-do-registo">Efetuar Registo</a>
             </div>
         </form>

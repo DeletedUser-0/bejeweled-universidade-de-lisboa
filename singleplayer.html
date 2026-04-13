@@ -9,22 +9,41 @@
         <link rel="stylesheet" href="CSS/styles.css">
     </head>
     <body>
+        <!-- Substitua o href pelo ficheiro .html para onde a seta deve ir -->
+        <a class="nav-back" href="menu.html"><img src="Media/seta_tras.png" alt="Voltar"></a>
+        <audio class="bg-music" src="Media/music.mp3"></audio>
+        <button type="button" class="music-toggle">
+            <img class="music-toggle__icon" src="Media/mute.png" alt="">
+        </button>
+        <script src="JavaScript/scripts.js"></script>
         <div class="singleplayer-container">
             <h1 class="singleplayer-title">SinglePlayer</h1>
             
             <div class="singleplayer-option">
-                <span class="singleplayer-label">Tabuleiro com dimensões:</span>
-                <div class="singleplayer-buttons-group">
-                    <button class="botao-singleplayer" data-dims="8x8">8x8</button>
-                    <button class="botao-singleplayer" data-dims="10x10">10x10</button>
+                <span class="singleplayer-label">Tabuleiro com dimensoes:</span>
+                <div class="grupo-itens-selecionaveis">
+                    <label class="item-selecionavel-singleplayer">
+                        <input type="radio" name="dimensao-tabuleiro" class="item-selecionavel-singleplayer__entrada" checked>
+                        <span class="item-selecionavel-singleplayer__face">8x8</span>
+                    </label>
+                    <label class="item-selecionavel-singleplayer">
+                        <input type="radio" name="dimensao-tabuleiro" class="item-selecionavel-singleplayer__entrada">
+                        <span class="item-selecionavel-singleplayer__face">10x10</span>
+                    </label>
                 </div>
             </div>
 
             <div class="singleplayer-option">
                 <span class="singleplayer-label">Temas:</span>
-                <div class="singleplayer-buttons-group">
-                    <button class="botao-singleplayer" data-theme="joias">joias</button>
-                    <button class="botao-singleplayer" data-theme="fruta">Fruta</button>
+                <div class="grupo-itens-selecionaveis">
+                    <label class="item-selecionavel-singleplayer">
+                        <input type="radio" name="tema-jogo" class="item-selecionavel-singleplayer__entrada" checked>
+                        <span class="item-selecionavel-singleplayer__face">joias</span>
+                    </label>
+                    <label class="item-selecionavel-singleplayer">
+                        <input type="radio" name="tema-jogo" class="item-selecionavel-singleplayer__entrada">
+                        <span class="item-selecionavel-singleplayer__face">Fruta</span>
+                    </label>
                 </div>
             </div>
 

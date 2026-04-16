@@ -7,7 +7,7 @@
         <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="CSS/styles.css">
     </head>
-    <body>
+    <body class="pagina-registo">
         
         <a class="nav-back" href="index.html"><img src="Media/seta_tras.png" alt="Voltar"></a>
         <audio class="bg-music" src="Media/music.mp3"></audio>
@@ -33,16 +33,6 @@
             <input type="date" id="data-de-nascimento" name="data-de-nascimento">
             
 
-            <!-- 
-            <label for="avatar">Escolhe o teu avatar: </label>
-            <select id="avatar" name="avatar">
-                <option value="">Seleciona...</option>
-                <option value="avatar1">Avatar 1</option>
-                <option value="avatar2">Avatar 2</option>
-                <option value="avatar3">Avatar 3</option>
-                
-            </select> -->
-
             <div class="avatar-container">
                 <div class="avatares">
                     <label class="avatar">
@@ -65,7 +55,7 @@
                 </div>
             </div>
             <div class="botao-registo-container">
-                <a href="index.html" class="botoes-do-registo">Efetuar Registo</a>
+                <button type="button" class="botoes-do-registo" onclick="window.location.href='index.html'">Efetuar Registo</button>
             </div>
         </form>
 

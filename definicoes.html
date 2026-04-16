@@ -1,25 +1,55 @@
-<html>
+<!DOCTYPE html>
+<html lang="pt">
     <head>
         <title>Bejeweled - Definições</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="CSS/styles.css">
     </head>
-
     <body>
-        
         <a class="nav-back" href="menu.html"><img src="Media/seta_tras.png" alt="Voltar"></a>
         <audio class="bg-music" src="Media/music.mp3"></audio>
         <button type="button" class="music-toggle">
             <img class="music-toggle__icon" src="Media/mute.png" alt="">
         </button>
+
+        <div class="definicoes-pagina">
+            <h1 class="definicoes-titulo">Definições</h1>
+
+            <div class="volume-bloco">
+                <label for="volume-slider">Volume da música</label>
+                <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="50" step="1">
+            </div>
+
+            <button type="button" class="botao-terminar-sessao" onclick="window.location.href='index.html'">
+                Terminar Sessão
+            </button>
+        </div>
+
         <script src="JavaScript/scripts.js"></script>
-        <header>
-            <p id="titulo">Definições</p>
-        </header>
-        <h1>Volume:</h1>
-        <input type="range" min="1" max="100" value="50" step="0.01">
-        <a href="menu.html"><button>Voltar para o menu</button></a>
+        <script>
+            (function () {
+                var audio = document.querySelector('.bg-music');
+                var slider = document.getElementById('volume-slider');
+                if (!audio || !slider) return;
+                var k = 'volumeMusicaBejeweled';
+                var g = localStorage.getItem(k);
+                if (g !== null) {
+                    var n = parseInt(g, 10);
+                    if (!isNaN(n) && n >= 0 && n <= 100) {
+                        slider.value = n;
+                        audio.volume = n / 100;
+                    }
+                }
+                slider.oninput = function () {
+                    var p = parseFloat(slider.value);
+                    localStorage.setItem(k, String(Math.round(p)));
+                    audio.volume = p / 100;
+                };
+            })();
+        </script>
     </body>
 </html>

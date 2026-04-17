@@ -499,3 +499,210 @@ input {
   }
 }
 
+
+
+
+
+/* === TABULEIRO === */
+.pagina-tabuleiro {
+    background-image: url('../Media/backk.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 56px 20px 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.jogo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.stats-bloco {
+    text-align: center;
+}
+
+.stats-item {
+    font-size: 28px;
+    color: white;
+    margin: 10px 0;
+}
+
+.botao-terminar-jogo {
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background-color: #dc3545;
+    border: none;
+    cursor: pointer;
+    font-family: "VT323", monospace;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+}
+
+.botao-terminar-jogo:hover {
+    background-color: #c82333;
+}
+
+@media (min-width: 900px) {
+    .botao-terminar-jogo {
+        top: auto;
+        left: auto;
+        bottom: 20px;
+        right: 20px;
+        font-size: 24px;
+        padding: 14px 28px;
+    }
+
+    .jogo-container {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding-left: 40px;
+    }
+
+    .stats-bloco {
+        text-align: left;
+        min-width: 200px;
+    }
+
+    .stats-item {
+        font-size: 36px;
+    }
+}
+
+.tabuleiro-wrapper {
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+}
+
+.tabuleiro-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+    max-width: 90vmin;
+    width: 600px;
+    margin: 0 auto;
+}
+
+.celula-tabuleiro {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Fundo alternado preto/cinza */
+.celula-tabuleiro:nth-child(16n+1),
+.celula-tabuleiro:nth-child(16n+3),
+.celula-tabuleiro:nth-child(16n+5),
+.celula-tabuleiro:nth-child(16n+7),
+.celula-tabuleiro:nth-child(16n+10),
+.celula-tabuleiro:nth-child(16n+12),
+.celula-tabuleiro:nth-child(16n+14),
+.celula-tabuleiro:nth-child(16n+16) {
+    background-color: #222;
+}
+
+.celula-tabuleiro:nth-child(16n+2),
+.celula-tabuleiro:nth-child(16n+4),
+.celula-tabuleiro:nth-child(16n+6),
+.celula-tabuleiro:nth-child(16n+8),
+.celula-tabuleiro:nth-child(16n+9),
+.celula-tabuleiro:nth-child(16n+11),
+.celula-tabuleiro:nth-child(16n+13),
+.celula-tabuleiro:nth-child(16n+15) {
+    background-color: #555;
+}
+
+.joia-imagem {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    display: block;
+}
+
+@media (min-width: 900px) {
+    .tabuleiro-grid {
+        width: 700px;
+    }
+}
+
+/* === JOGO TERMINADO === */
+.pagina-jogo-terminado {
+    background-image: url('../Media/backk.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 56px 20px 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.jogo-terminado-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.jogo-terminado-titulo {
+    font-size: 42px;
+    color: white;
+    text-align: center;
+    margin: 0;
+}
+
+.botao-voltar-menu {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #4caf50;
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-family: "VT323", monospace;
+}
+
+.botao-voltar-menu:hover {
+    background-color: #45a049;
+}
+
+/* Tabela com fundo sólido para não mostrar imagem de fundo */
+.estatisticas-tabela-wrap {
+    background-color: white;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+@media (min-width: 900px) {
+    .jogo-terminado-titulo {
+        font-size: 64px;
+    }
+
+    .botao-voltar-menu {
+        font-size: 36px;
+        padding: 20px 50px;
+    }
+}
+

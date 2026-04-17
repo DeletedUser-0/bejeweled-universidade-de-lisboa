@@ -1,3 +1,11 @@
+<!--
+ITW 25/26 Grupo 50
+
+David Coelho 65929 - PL 23
+Miguel Horta 62208 - PL 23
+Rodrigo Duarte 60354 - PL 23
+-->
+
 <!DOCTYPE html>
 <html lang="pt">
     <head>
@@ -24,33 +32,8 @@
                 <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="50" step="1">
             </div>
  
-            
-            <button type="button" class="botao-terminar-sessao" onclick="window.location.href='index.html'">
-                Terminar Sessão
-            </button>
         </div>
 
         <script src="JavaScript/scripts.js"></script>
-        <script>
-            (function () {
-                var audio = document.querySelector('.bg-music');
-                var slider = document.getElementById('volume-slider');
-                if (!audio || !slider) return;
-                var k = 'volumeMusicaBejeweled';
-                var g = localStorage.getItem(k);
-                if (g !== null) {
-                    var n = parseInt(g, 10);
-                    if (!isNaN(n) && n >= 0 && n <= 100) {
-                        slider.value = n;
-                        audio.volume = n / 100;
-                    }
-                }
-                slider.oninput = function () {
-                    var p = parseFloat(slider.value);
-                    localStorage.setItem(k, String(Math.round(p)));
-                    audio.volume = p / 100;
-                };
-            })();
-        </script>
     </body>
 </html>

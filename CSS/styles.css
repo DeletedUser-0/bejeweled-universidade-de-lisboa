@@ -1,3 +1,11 @@
+/*
+ITW 25/26 Grupo 50
+
+David Coelho 65929 - PL 23
+Miguel Horta 62208 - PL 23
+Rodrigo Duarte 60354 - PL 23
+*/
+
 body,
 button {
   font-family: "VT323", monospace;
@@ -7,8 +15,10 @@ body {
   margin: 0;
   padding-top: 56px;
   overflow-y: hidden;
+  overflow-x: hidden;
 }
 
+/* === NAV & MUSICA === */
 .nav-back {
   position: fixed;
   top: 12px;
@@ -39,8 +49,10 @@ body {
   display: none;
 }
 
+/* === REGISTO === */
 .pagina-registo {
   overflow-y: hidden;
+  overflow-x: hidden;
 }
 
 .botao-registo-container {
@@ -86,6 +98,7 @@ body {
   margin: 20px 0;
 }
 
+/* === FORMS === */
 form {
   max-width: 500px;
   margin: 0 auto;
@@ -102,23 +115,10 @@ input {
   width: 100%;
   padding: 8px;
   margin-bottom: 15px;
+  box-sizing: border-box;
 }
 
-@media (max-width: 600px) {
-  .avatar img {
-    width: 60px;
-    height: 60px;
-  }
-
-  .avatares {
-    gap: 10px;
-  }
-
-  form {
-    padding: 10px;
-  }
-}
-
+/* === INDEX & LOGIN === */
 .index-container {
   display: flex;
   flex-direction: column;
@@ -126,6 +126,8 @@ input {
   justify-content: center;
   min-height: calc(100vh - 56px);
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .logo,
@@ -134,6 +136,7 @@ input {
   margin-bottom: 30px;
 }
 
+/* === BUTTONS (partilhados) === */
 .botoes-do-index,
 .botoes-do-registo,
 .botao-login,
@@ -144,7 +147,7 @@ input {
   background-color: #4caf50;
   color: white;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: bold;
   border: none;
   cursor: pointer;
@@ -157,6 +160,7 @@ input {
   background-color: #45a049;
 }
 
+/* === MENU === */
 .menu-container {
   min-height: 100vh;
   text-align: center;
@@ -172,23 +176,28 @@ input {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
-#menu_tbl,
-#hint_tbl {
-  background-color: pink;
+.menu-button {
+  font-size: 24px;
+  padding: 18px 30px;
+  width: 80%;
+  box-sizing: border-box;
 }
 
-#tabuleiro {
-  display: flex;
-  justify-content: space-between;
+.menu-button-red {
+  background-color: #dc3545;
+  margin-top: 50px;
 }
 
-#titulo {
-  text-align: center;
-  font-size: 400%;
+.menu-button-red:hover {
+  background-color: #c82333;
 }
 
+/* === DEFINICOES === */
 .definicoes-pagina {
   box-sizing: border-box;
   min-height: calc(100vh - 56px);
@@ -220,7 +229,6 @@ input {
   margin-bottom: 14px;
 }
 
-/* Evitar height baixo no range — corta o thumb nos browsers */
 .volume-slider {
   display: block;
   width: 100%;
@@ -232,22 +240,7 @@ input {
   box-sizing: border-box;
 }
 
-.botao-terminar-sessao {
-  margin-top: auto;
-  padding: 14px 28px;
-  font-size: 22px;
-  font-weight: bold;
-  color: #fff;
-  background-color: #c62828;
-  border: none;
-  cursor: pointer;
-  font-family: "VT323", monospace;
-}
-
-.botao-terminar-sessao:hover {
-  background-color: #b71c1c;
-}
-
+/* === SINGLEPLAYER === */
 .singleplayer-container {
   box-sizing: border-box;
   min-height: calc(100vh - 56px);
@@ -317,6 +310,7 @@ input {
   background-color: #c82333;
 }
 
+/* === ESTATISTICAS === */
 .estatisticas-main {
   padding: 20px;
 }
@@ -325,6 +319,9 @@ input {
   max-width: 1250px;
   margin: 0 auto;
   overflow-x: auto;
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
 }
 
 .estatisticas-tabela {
@@ -360,6 +357,221 @@ input {
   background-color: #f1f8e9;
 }
 
+/* === TABULEIRO === */
+.pagina-tabuleiro {
+  background-image: url('../Media/backk.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0;
+  padding: 56px 20px 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.jogo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stats-bloco {
+  text-align: center;
+}
+
+.stats-item {
+  font-size: 28px;
+  color: white;
+  margin: 10px 0;
+}
+
+.botao-terminar-jogo {
+  padding: 10px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background-color: #dc3545;
+  border: none;
+  cursor: pointer;
+  font-family: "VT323", monospace;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+}
+
+.botao-terminar-jogo:hover {
+  background-color: #c82333;
+}
+
+.tabuleiro-wrapper {
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+}
+
+.tabuleiro-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  max-width: 90vmin;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.celula-tabuleiro {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.celula-tabuleiro:nth-child(16n+1),
+.celula-tabuleiro:nth-child(16n+3),
+.celula-tabuleiro:nth-child(16n+5),
+.celula-tabuleiro:nth-child(16n+7),
+.celula-tabuleiro:nth-child(16n+10),
+.celula-tabuleiro:nth-child(16n+12),
+.celula-tabuleiro:nth-child(16n+14),
+.celula-tabuleiro:nth-child(16n+16) {
+  background-color: #222;
+}
+
+.celula-tabuleiro:nth-child(16n+2),
+.celula-tabuleiro:nth-child(16n+4),
+.celula-tabuleiro:nth-child(16n+6),
+.celula-tabuleiro:nth-child(16n+8),
+.celula-tabuleiro:nth-child(16n+9),
+.celula-tabuleiro:nth-child(16n+11),
+.celula-tabuleiro:nth-child(16n+13),
+.celula-tabuleiro:nth-child(16n+15) {
+  background-color: #555;
+}
+
+.joia-imagem {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  display: block;
+}
+
+/* === JOGO TERMINADO === */
+.pagina-jogo-terminado {
+  background-image: url('../Media/backk.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0;
+  padding: 56px 20px 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.jogo-terminado-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.jogo-terminado-titulo {
+  font-size: 42px;
+  color: white;
+  text-align: center;
+  margin: 0;
+}
+
+.botao-voltar-menu {
+  display: inline-block;
+  padding: 15px 30px;
+  background-color: #4caf50;
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-family: "VT323", monospace;
+}
+
+.botao-voltar-menu:hover {
+  background-color: #45a049;
+}
+
+/* === MEDIA QUERIES === */
+@media (max-width: 600px) {
+  .avatar img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .avatares {
+    gap: 10px;
+  }
+
+  form {
+    padding: 10px;
+  }
+
+  .pagina-registo h1 {
+    text-align: center;
+    font-size: 28px;
+    margin: 10px 0;
+  }
+
+  .pagina-registo form {
+    max-width: 90%;
+  }
+
+  .pagina-registo input {
+    width: 100%;
+  }
+
+  .index-container form {
+    max-width: 90%;
+    text-align: center;
+  }
+
+  .index-container form label {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .index-container form input {
+    font-size: 24px;
+    padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .botao-login {
+    font-size: 36px;
+    padding: 20px 60px;
+    display: block;
+    margin: 20px auto;
+  }
+
+  /* Estatísticas - telemóvel */
+  .estatisticas-header {
+    text-align: center;
+  }
+
+  .estatisticas-header h1 {
+    font-size: 36px;
+    margin: 10px 0;
+  }
+}
+
 @media (min-width: 900px) {
   .index-container {
     gap: 20px;
@@ -381,21 +593,30 @@ input {
   form {
     max-width: 700px;
     padding: 30px;
+    text-align: center;
   }
 
-  label {
-    font-size: 30px;
+  form label {
+    font-size: 36px;
+    display: block;
+    text-align: center;
   }
 
-  input {
-    font-size: 24px;
-    padding: 14px;
+  form input {
+    font-size: 26px;
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .botao-login,
   .botoes-do-registo {
     padding: 20px 45px;
     font-size: 30px;
+  }
+
+  .login-actions {
+    width: 100%;
   }
 
   .avatar img {
@@ -417,6 +638,14 @@ input {
     font-size: 32px;
     padding: 20px 50px;
     min-width: 340px;
+    width: auto;
+  }
+
+  .menu-button-red {
+    font-size: 32px;
+    padding: 20px 50px;
+    min-width: 340px;
+    width: auto;
   }
 
   .singleplayer-title {
@@ -445,11 +674,6 @@ input {
     font-size: 32px;
   }
 
-  .botao-terminar-sessao {
-    font-size: 28px;
-    padding: 18px 36px;
-  }
-
   .pagina-registo h1 {
     font-size: 44px;
     margin: 8px 0;
@@ -458,11 +682,13 @@ input {
   .pagina-registo form {
     max-width: 640px;
     padding: 12px 20px;
+    text-align: left;
   }
 
   .pagina-registo label {
     font-size: 24px;
     margin-bottom: 4px;
+    text-align: left;
   }
 
   .pagina-registo input {
@@ -497,212 +723,43 @@ input {
     border-width: 2px;
     padding: 16px;
   }
-}
 
-
-
-
-
-/* === TABULEIRO === */
-.pagina-tabuleiro {
-    background-image: url('../Media/backk.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    margin: 0;
-    padding: 56px 20px 20px;
-    min-height: 100vh;
-    box-sizing: border-box;
-}
-
-.jogo-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.stats-bloco {
-    text-align: center;
-}
-
-.stats-item {
-    font-size: 28px;
-    color: white;
-    margin: 10px 0;
-}
-
-.botao-terminar-jogo {
-    padding: 10px 20px;
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
-    background-color: #dc3545;
-    border: none;
-    cursor: pointer;
-    font-family: "VT323", monospace;
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 100;
-}
-
-.botao-terminar-jogo:hover {
-    background-color: #c82333;
-}
-
-@media (min-width: 900px) {
-    .botao-terminar-jogo {
-        top: auto;
-        left: auto;
-        bottom: 20px;
-        right: 20px;
-        font-size: 24px;
-        padding: 14px 28px;
-    }
-
-    .jogo-container {
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: flex-start;
-        padding-left: 40px;
-    }
-
-    .stats-bloco {
-        text-align: left;
-        min-width: 200px;
-    }
-
-    .stats-item {
-        font-size: 36px;
-    }
-}
-
-.tabuleiro-wrapper {
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 16px;
-}
-
-.tabuleiro-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 4px;
-    max-width: 90vmin;
-    width: 600px;
-    margin: 0 auto;
-}
-
-.celula-tabuleiro {
-    aspect-ratio: 1 / 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-/* Fundo alternado preto/cinza */
-.celula-tabuleiro:nth-child(16n+1),
-.celula-tabuleiro:nth-child(16n+3),
-.celula-tabuleiro:nth-child(16n+5),
-.celula-tabuleiro:nth-child(16n+7),
-.celula-tabuleiro:nth-child(16n+10),
-.celula-tabuleiro:nth-child(16n+12),
-.celula-tabuleiro:nth-child(16n+14),
-.celula-tabuleiro:nth-child(16n+16) {
-    background-color: #222;
-}
-
-.celula-tabuleiro:nth-child(16n+2),
-.celula-tabuleiro:nth-child(16n+4),
-.celula-tabuleiro:nth-child(16n+6),
-.celula-tabuleiro:nth-child(16n+8),
-.celula-tabuleiro:nth-child(16n+9),
-.celula-tabuleiro:nth-child(16n+11),
-.celula-tabuleiro:nth-child(16n+13),
-.celula-tabuleiro:nth-child(16n+15) {
-    background-color: #555;
-}
-
-.joia-imagem {
-    width: 90%;
-    height: 90%;
-    object-fit: contain;
-    display: block;
-}
-
-@media (min-width: 900px) {
-    .tabuleiro-grid {
-        width: 700px;
-    }
-}
-
-/* === JOGO TERMINADO === */
-.pagina-jogo-terminado {
-    background-image: url('../Media/backk.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    margin: 0;
-    padding: 56px 20px 20px;
-    min-height: 100vh;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-.jogo-terminado-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.jogo-terminado-titulo {
-    font-size: 42px;
-    color: white;
-    text-align: center;
-    margin: 0;
-}
-
-.botao-voltar-menu {
-    display: inline-block;
-    padding: 15px 30px;
-    background-color: #4caf50;
-    color: white;
-    text-decoration: none;
+  .botao-terminar-jogo {
+    top: auto;
+    left: auto;
+    bottom: 20px;
+    right: 20px;
     font-size: 24px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    font-family: "VT323", monospace;
-}
+    padding: 14px 28px;
+  }
 
-.botao-voltar-menu:hover {
-    background-color: #45a049;
-}
+  .jogo-container {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 40px;
+  }
 
-/* Tabela com fundo sólido para não mostrar imagem de fundo */
-.estatisticas-tabela-wrap {
-    background-color: white;
-    padding: 5px;
-    border-radius: 10px;
-}
+  .stats-bloco {
+    text-align: left;
+    min-width: 200px;
+  }
 
-@media (min-width: 900px) {
-    .jogo-terminado-titulo {
-        font-size: 64px;
-    }
+  .stats-item {
+    font-size: 36px;
+  }
 
-    .botao-voltar-menu {
-        font-size: 36px;
-        padding: 20px 50px;
-    }
+  .tabuleiro-grid {
+    width: 700px;
+  }
+
+  .jogo-terminado-titulo {
+    font-size: 64px;
+  }
+
+  .botao-voltar-menu {
+    font-size: 36px;
+    padding: 20px 50px;
+  }
 }
 

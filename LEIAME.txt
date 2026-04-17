@@ -1,0 +1,17 @@
+
+ITW 25/26 Grupo 50
+
+David Coelho 65929 - PL 23
+Miguel Horta 62208 - PL 23
+Rodrigo Duarte 60354 - PL 23
+
+Contribuições:
+David: tabuleiro.html, jogo-terminado.html, imagens 
+Miguel: login.html, registo.html, estatisticas.html, singleplayer.html, definicoes.html
+Rodrigo: index.html, menu.html
+
+Percentagens: 
+David: 40 %
+Miguel: 40 %
+Rodrigo: 20 %
+

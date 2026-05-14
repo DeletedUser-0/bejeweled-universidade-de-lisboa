@@ -763,3 +763,33 @@ input {
   }
 }
 
+
+/* === SELECAO DE JOIA === */
+.joia-selecionada {
+  outline: 3px solid #00cc00;
+  outline-offset: -3px;
+  box-shadow: 0 0 8px #00cc00;
+}
+
+/* === POPUP DE AVISO === */
+#popup-aviso {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-family: "VT323", monospace;
+  font-size: 24px;
+  padding: 24px 32px;
+  border: 2px solid #dc3545;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 80vw;
+  z-index: 9999;
+}
+
+#popup-aviso.popup-visivel {
+  display: block;
+}

@@ -37,30 +37,71 @@ Rodrigo Duarte 60354 - PL 23
                         <th scope="col">Pontuação máxima</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">Pedro</th>
-                        <td>31</td>
-                        <td>55 min 03 s</td>
-                        <td>15 100</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Joao</th>
-                        <td>18</td>
-                        <td>42 min 15 s</td>
-                        <td>12 450</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Martim</th>
-                        <td>9</td>
-                        <td>68 min 40 s</td>
-                        <td>8 920</td>
-                    </tr>
+                <tbody id="estatisticas-corpo">
+                    <!-- Linhas geradas dinamicamente a partir de localStorage -->
                 </tbody>
             </table>
         </div>
 
         <a href="menu.html" class="botao-voltar-menu">Voltar ao menu</a>
     </div>
+        <script>
+            (function () {
+                function formatTempo(totalSegundos) {
+                    var m = Math.floor(totalSegundos / 60);
+                    var s = totalSegundos % 60;
+                    return m + ' min ' + (s < 10 ? '0' + s : s) + ' s';
+                }
+
+                var corpo = document.getElementById('estatisticas-corpo');
+                if (!corpo) return;
+
+                var raw = localStorage.getItem('bejeweled_estatisticas');
+                if (!raw) {
+                    corpo.innerHTML = '<tr><td colspan="4">Sem estatísticas gravadas.</td></tr>';
+                    return;
+                }
+
+                try {
+                    var list = JSON.parse(raw) || [];
+                } catch (e) {
+                    corpo.innerHTML = '<tr><td colspan="4">Erro a ler estatísticas.</td></tr>';
+                    return;
+                }
+
+                // Agregar por nome
+                var mapa = {};
+                list.forEach(function (e) {
+                    var n = e.nome || 'anonimo';
+                    if (!mapa[n]) mapa[n] = { jogos: 0, tempo: 0, maxPont: 0 };
+                    mapa[n].jogos += 1;
+                    mapa[n].tempo += (e.tempoSegundos || 0);
+                    if ((e.pontuacao || 0) > mapa[n].maxPont) mapa[n].maxPont = e.pontuacao || 0;
+                });
+
+                // Converter mapa para array e ordenar por pontuação máxima desc
+                var rows = Object.keys(mapa).map(function (k) {
+                    return { nome: k, jogos: mapa[k].jogos, tempo: mapa[k].tempo, maxPont: mapa[k].maxPont };
+                });
+                rows.sort(function (a, b) { return b.maxPont - a.maxPont; });
+
+                if (rows.length === 0) {
+                    corpo.innerHTML = '<tr><td colspan="4">Sem estatísticas gravadas.</td></tr>';
+                    return;
+                }
+
+                var html = '';
+                rows.forEach(function (r) {
+                    html += '<tr>' +
+                                    '<th scope="row">' + (r.nome) + '</th>' +
+                                    '<td>' + r.jogos + '</td>' +
+                                    '<td>' + formatTempo(r.tempo) + '</td>' +
+                                    '<td>' + r.maxPont.toLocaleString() + '</td>' +
+                                    '</tr>';
+                });
+
+                corpo.innerHTML = html;
+            })();
+        </script>
 </body>
 </html>

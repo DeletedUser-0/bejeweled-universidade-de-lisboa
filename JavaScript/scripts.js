@@ -294,6 +294,49 @@ Rodrigo Duarte 60354 - PL 23
     }, 3000);
   }
 
+  /* ---------- Estatísticas: guardar resultado final ---------- */
+  function adicionarEstatisticaFinal() {
+    try {
+      var utilizadorStr = localStorage.getItem('bejeweled_utilizador');
+      var nome = 'anonimo';
+      if (utilizadorStr) {
+        try {
+          var u = JSON.parse(utilizadorStr);
+          if (u && u.email) {
+            nome = u.email.split('@')[0];
+          }
+        } catch (e) {}
+      }
+
+      var estat = {
+        nome: nome,
+        pontuacao: pontuacao,
+        tempoSegundos: timerSegundos,
+        joiasEliminadas: joiasEliminadas,
+        data: new Date().toISOString()
+      };
+
+      var arrStr = localStorage.getItem('bejeweled_estatisticas');
+      var arr = [];
+      if (arrStr) {
+        try { arr = JSON.parse(arrStr) || []; } catch (e) { arr = []; }
+      }
+      arr.push(estat);
+      localStorage.setItem('bejeweled_estatisticas', JSON.stringify(arr));
+    } catch (e) {
+      // falha silenciosa para manter simplicidade de aluno novato
+    }
+  }
+
+  function resetarStatsParaNovoJogo() {
+    pontuacao = 0;
+    joiasEliminadas = 0;
+    joiasFaltam = 20;
+    timerSegundos = 0;
+    guardarEstado();
+    atualizarStats();
+  }
+
   /* ---------- Verificar se duas posicoes sao adjacentes ---------- */
   function saoAdjacentes(l1, c1, l2, c2) {
     var difLinha = Math.abs(l1 - l2);
@@ -351,6 +394,18 @@ Rodrigo Duarte 60354 - PL 23
     }
   }
 
+  /* ---------- Gerar novas joias para preencher o topo ---------- */
+  function gerarNovasJoias() {
+    for (var c = 0; c < COLUNAS; c++) {
+      for (var l = 0; l < LINHAS; l++) {
+        if (tabuleiro[l][c] === null) {
+          tabuleiro[l][c] = TIPOS[Math.floor(Math.random() * TIPOS.length)];
+          atualizarCelula(l, c);
+        }
+      }
+    }
+  }
+
   /* ---------- Processar eliminacoes em cascata ---------- */
   function processarCascata() {
     var marcadas = encontrarParaEliminar(tabuleiro);
@@ -364,7 +419,19 @@ Rodrigo Duarte 60354 - PL 23
         joiasFaltam = Math.max(0, joiasFaltam - eliminadas);
       }
       atualizarStats();
+
+      // Se o objetivo de joias foi alcançado -> terminar jogo
+      if (joiasFaltam === 0) {
+        jogoAtivo = false;
+        // Adiciona estatística final e prepara novo jogo
+        adicionarEstatisticaFinal();
+        resetarStatsParaNovoJogo();
+        // Navega para a página de jogo terminado (simples e visível)
+        try { window.location.href = 'jogo-terminado.html'; } catch (e) {}
+        return;
+      }
       descerJoias();
+      gerarNovasJoias();
       processarCascata();
     } else {
       jogoAtivo = true;
@@ -423,5 +490,115 @@ Rodrigo Duarte 60354 - PL 23
   }
 
   iniciarJogo();
+
+  // Se existir um botão para terminar o jogo manualmente, liga-o às mesmas ações
+  var botaoTerminar = document.querySelector('.botao-terminar-jogo');
+  if (botaoTerminar) {
+    botaoTerminar.addEventListener('click', function () {
+      adicionarEstatisticaFinal();
+      resetarStatsParaNovoJogo();
+      try { window.location.href = 'jogo-terminado.html'; } catch (e) {}
+    });
+  }
+
+})();
+
+
+
+/* ==================== LOGIN E REGISTO ==================== */
+(function () {
+  
+  function configurarBotoes() {
+    var botaoRegisto = document.querySelector('.botoes-do-registo');
+    var botaoLogin = document.querySelector('.botao-login');
+    
+    if (botaoRegisto) {
+      botaoRegisto.onclick = function() {
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var password2 = document.getElementById('password2').value;
+        var dataNascimento = document.getElementById('data-de-nascimento').value;
+        var avatar = document.querySelector('input[name="avatar"]:checked');
+        
+        if (!email || !password || !password2 || !dataNascimento || !avatar) {
+          alert('Preenche todos os campos!');
+          return;
+        }
+
+        // Validar idade: utilizador tem de ter pelo menos 13 anos
+        var hoje = new Date();
+        var nasc = new Date(dataNascimento);
+        if (isNaN(nasc.getTime())) {
+          alert('Data de nascimento invalida!');
+          return;
+        }
+        var idade = hoje.getFullYear() - nasc.getFullYear();
+        var meses = hoje.getMonth() - nasc.getMonth();
+        if (meses < 0 || (meses === 0 && hoje.getDate() < nasc.getDate())) {
+          idade--;
+        }
+        if (idade < 13) {
+          alert('Tens de ter pelo menos 13 anos para te registares!');
+          return;
+        }
+
+        // Validar idade maxima: não aceitar mais de 117 anos
+        if (idade > 117) {
+          alert('Tens de ter no máximo 117 anos para te registares!');
+          return;
+        }
+
+        if (password !== password2) {
+          alert('As passwords nao sao iguais!');
+          return;
+        }
+        
+        var utilizador = {
+          email: email,
+          password: password,
+          dataNascimento: dataNascimento,
+          avatar: avatar.value
+        };
+        
+        localStorage.setItem('bejeweled_utilizador', JSON.stringify(utilizador));
+        alert('Registo feito com sucesso! Agora faz login.');
+        window.location.href = 'login.html';
+      };
+    }
+    
+    if (botaoLogin) {
+      botaoLogin.onclick = function() {
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        
+        if (!email || !password) {
+          alert('Escreve o email e a password!');
+          return;
+        }
+        
+        var utilizadorGuardado = localStorage.getItem('bejeweled_utilizador');
+        
+        if (!utilizadorGuardado) {
+          alert('Ainda nao existe nenhum utilizador registado!');
+          return;
+        }
+        
+        var utilizador = JSON.parse(utilizadorGuardado);
+        
+        if (email === utilizador.email && password === utilizador.password) {
+          alert('Login feito com sucesso!');
+          window.location.href = 'menu.html';
+        } else {
+          alert('Email ou password incorretos!');
+        }
+      };
+    }
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', configurarBotoes);
+  } else {
+    configurarBotoes();
+  }
 
 })();

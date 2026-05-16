@@ -367,7 +367,51 @@ Rodrigo Duarte 60354 - PL 23
       descerJoias();
       processarCascata();
     } else {
+      /* Sem mais eliminacoes por cascata - preencher os espacos vazios */
+      preencherVaziosSeguro();
       jogoAtivo = true;
+    }
+  }
+
+  /* ---------- Preencher espacos vazios de forma segura (sem causar eliminacao) ---------- */
+  function preencherVaziosSeguro() {
+    /* Guardar quais posicoes estao vazias */
+    var posicoesvazias = [];
+    for (var l = 0; l < LINHAS; l++) {
+      for (var c = 0; c < COLUNAS; c++) {
+        if (tabuleiro[l][c] === null) {
+          posicoesvazias.push({ linha: l, coluna: c });
+        }
+      }
+    }
+
+    if (posicoesvazias.length === 0) return;
+
+    /* Tentar preencher as posicoes vazias sem causar eliminacao */
+    var valido = false;
+    while (!valido) {
+      /* Preencher cada posicao vazia com uma joia aleatoria */
+      for (var i = 0; i < posicoesvazias.length; i++) {
+        var pos = posicoesvazias[i];
+        tabuleiro[pos.linha][pos.coluna] = TIPOS[Math.floor(Math.random() * TIPOS.length)];
+      }
+      /* Verificar se o tabuleiro agora tem eliminacoes */
+      var marcadas = encontrarParaEliminar(tabuleiro);
+      if (contarMarcadas(marcadas) === 0) {
+        valido = true;
+      } else {
+        /* Voltar a por null nas posicoes vazias e tentar outra vez */
+        for (var j = 0; j < posicoesvazias.length; j++) {
+          var pos2 = posicoesvazias[j];
+          tabuleiro[pos2.linha][pos2.coluna] = null;
+        }
+      }
+    }
+
+    /* Mostrar as joias novas no DOM */
+    for (var k = 0; k < posicoesvazias.length; k++) {
+      var pos3 = posicoesvazias[k];
+      atualizarCelula(pos3.linha, pos3.coluna);
     }
   }
 

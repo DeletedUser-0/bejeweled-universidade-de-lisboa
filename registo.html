@@ -22,7 +22,6 @@ Rodrigo Duarte 60354 - PL 23
         <button type="button" class="music-toggle">
             <img class="music-toggle__icon" src="Media/mute.png" alt="">
         </button>
-        <script src="JavaScript/scripts.js"></script>
         <h1>Bem-vindo ao Bejeweled - Registar</h1>
         
         <div id="registo"></div> 
@@ -31,14 +30,14 @@ Rodrigo Duarte 60354 - PL 23
             <label for="email">Email: </label>
             <input type="email" id="email" name="email">
         
-            <label>Palavra-passe: </label>
+            <label for="password">Palavra-passe: </label>
             <input type="password" id="password" name="password"> 
         
-            <label>Confirmar Palavra-Passe: </label>
+            <label for="password2">Confirmar Palavra-Passe: </label>
             <input type="password" id="password2" name="password2"> 
         
-            <label>Data de nascimento (DD-MM-YYYY) </label>
-            <input type="date" id="data-de-nascimento" name="data-de-nascimento">
+            <label for="data-de-nascimento">Data de nascimento (DD-MM-YYYY) </label>
+            <input type="date" id="data-de-nascimento" name="data-de-nascimento" min="1909-01-01" max="2026-12-31">
             
 
             <div class="avatar-container">
@@ -63,12 +62,10 @@ Rodrigo Duarte 60354 - PL 23
                 </div>
             </div>
             <div class="botao-registo-container">
-                <button type="button" class="botoes-do-registo" onclick="window.location.href='index.html'">Efetuar Registo</button>
+                <button type="button" id="btn-registo" class="botoes-do-registo" disabled>Efetuar Registo</button>
             </div>
         </form>
 
-
-
-            
+        <script src="JavaScript/scripts.js"></script>
     </body>
 </html>

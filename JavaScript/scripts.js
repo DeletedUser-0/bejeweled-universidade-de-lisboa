@@ -48,18 +48,299 @@ Rodrigo Duarte 60354 - PL 23
   };
 })();
 
+/* ==================== DADOS DOS UTILIZADORES ==================== */
+var CHAVE_UTILIZADORES = 'bejeweledUtilizadores';
+var CHAVE_UTILIZADOR_ATUAL = 'bejeweledUtilizadorAtual';
+
+function utilizadoresPredefinidos() {
+  return [
+    { email: 'pedro@bejeweled.local', password: '1234', avatar: 'a.png', nome: 'pedro', jogos: 31, tempo: 3303, pontos: 15100 },
+    { email: 'joao@bejeweled.local', password: '1234', avatar: 'b.png', nome: 'joao', jogos: 18, tempo: 2535, pontos: 12450 },
+    { email: 'martim@bejeweled.local', password: '1234', avatar: 'c.png', nome: 'martim', jogos: 9, tempo: 4120, pontos: 8920 }
+  ];
+}
+
+function obterNomeDoEmail(email) {
+  return email.split('@')[0];
+}
+
+function carregarUtilizadores() {
+  var dados = localStorage.getItem(CHAVE_UTILIZADORES);
+  var utilizadores;
+
+  if (dados === null) {
+    utilizadores = utilizadoresPredefinidos();
+  } else {
+    try {
+      utilizadores = JSON.parse(dados);
+    } catch (e) {
+      utilizadores = utilizadoresPredefinidos();
+    }
+  }
+
+  for (var i = 0; i < utilizadores.length; i++) {
+    utilizadores[i].email = String(utilizadores[i].email).toLowerCase();
+    utilizadores[i].nome = obterNomeDoEmail(utilizadores[i].email);
+    utilizadores[i].jogos = Number(utilizadores[i].jogos) || 0;
+    utilizadores[i].tempo = Number(utilizadores[i].tempo) || 0;
+    utilizadores[i].pontos = Number(utilizadores[i].pontos) || 0;
+    if (!utilizadores[i].avatar) utilizadores[i].avatar = 'a.png';
+  }
+
+  var predefinidos = utilizadoresPredefinidos();
+  for (var p = 0; p < predefinidos.length; p++) {
+    var existe = false;
+    for (var u = 0; u < utilizadores.length; u++) {
+      if (utilizadores[u].email === predefinidos[p].email) existe = true;
+    }
+    if (!existe) utilizadores.push(predefinidos[p]);
+  }
+
+  guardarUtilizadores(utilizadores);
+  return utilizadores;
+}
+
+function guardarUtilizadores(utilizadores) {
+  localStorage.setItem(CHAVE_UTILIZADORES, JSON.stringify(utilizadores));
+}
+
+function procurarUtilizadorPorEmail(email) {
+  var utilizadores = carregarUtilizadores();
+  email = email.toLowerCase();
+  for (var i = 0; i < utilizadores.length; i++) {
+    if (utilizadores[i].email === email) return utilizadores[i];
+  }
+  return null;
+}
+
+function emailValido(email) {
+  email = email.toLowerCase().trim();
+  var partes = email.split('@');
+  if (partes.length !== 2) return false;
+  if (partes[0] === '' || partes[1] === '') return false;
+  if (email.indexOf(' ') !== -1) return false;
+  if (partes[1].indexOf('.') === -1) return false;
+  return true;
+}
+
+function mostrarErro(elemento, texto) {
+  if (!elemento) return;
+
+  var erro = document.querySelector('[data-erro-de="' + elemento.id + '"]');
+
+  if (!erro) {
+    erro = document.createElement('span');
+    erro.className = 'mensagem-erro';
+    erro.setAttribute('data-erro-de', elemento.id);
+    document.body.appendChild(erro);
+  }
+
+  var retangulo = elemento.getBoundingClientRect();
+  erro.textContent = texto;
+  erro.style.position = 'fixed';
+  erro.style.left = (retangulo.right + 10) + 'px';
+  erro.style.top = (retangulo.top + (retangulo.height / 2) - 12) + 'px';
+  erro.style.display = 'inline-block';
+
+  setTimeout(function () {
+    erro.textContent = '';
+    erro.style.display = 'none';
+  }, 3000);
+}
+
+function mostrarErroAvatar(texto) {
+  var caixa = document.querySelector('.avatar-container');
+  if (!caixa) return;
+  var erro = document.getElementById('erro-avatar');
+  if (!erro) {
+    erro = document.createElement('span');
+    erro.id = 'erro-avatar';
+    erro.className = 'mensagem-erro';
+    caixa.insertAdjacentElement('afterend', erro);
+  }
+  erro.textContent = texto;
+  erro.style.display = 'block';
+  setTimeout(function () {
+    erro.textContent = '';
+    erro.style.display = 'none';
+  }, 3000);
+}
+
+/* ==================== REGISTO ==================== */
+(function () {
+  var botao = document.getElementById('btn-registo');
+  if (!botao) return;
+
+  var email = document.getElementById('email');
+  var password = document.getElementById('password');
+  var password2 = document.getElementById('password2');
+  var data = document.getElementById('data-de-nascimento');
+  if (data) {
+    data.setAttribute('min', '1909-01-01');
+    data.setAttribute('max', '2026-12-31');
+  }
+  var avatares = document.querySelectorAll('input[name="avatar"]');
+
+  function avatarEscolhido() {
+    for (var i = 0; i < avatares.length; i++) {
+      if (avatares[i].checked) return avatares[i].value;
+    }
+    return '';
+  }
+
+  function atualizarBotao() {
+    var tudoPreenchido = email.value.trim() !== '' && password.value !== '' && password2.value !== '' && data.value !== '' && avatarEscolhido() !== '';
+    botao.disabled = !tudoPreenchido;
+  }
+
+  email.addEventListener('input', function () {
+    email.value = email.value.toLowerCase();
+    atualizarBotao();
+  });
+  password.addEventListener('input', atualizarBotao);
+  password2.addEventListener('input', atualizarBotao);
+  data.addEventListener('input', atualizarBotao);
+  for (var i = 0; i < avatares.length; i++) avatares[i].addEventListener('change', atualizarBotao);
+
+  botao.addEventListener('click', function () {
+    var ok = true;
+    var emailNormalizado = email.value.toLowerCase().trim();
+    email.value = emailNormalizado;
+
+    if (!emailValido(emailNormalizado)) {
+      mostrarErro(email, 'Email inválido');
+      ok = false;
+    } else if (procurarUtilizadorPorEmail(emailNormalizado) !== null) {
+      mostrarErro(email, 'Este email já está registado');
+      ok = false;
+    }
+
+    if (password.value !== password2.value) {
+      mostrarErro(password2, 'As palavras-passe têm de coincidir');
+      ok = false;
+    }
+
+    var partesData = data.value.split('-');
+    var ano = partesData[0];
+    var anoNumero = parseInt(ano, 10);
+
+    if (data.value.length !== 10 || partesData.length !== 3 || ano.length !== 4 || isNaN(anoNumero)) {
+      mostrarErro(data, 'O ano tem de ter 4 dígitos');
+      ok = false;
+    } else if (anoNumero < 1909 || anoNumero > 2026) {
+      mostrarErro(data, 'O ano tem de estar entre 1909 e 2026');
+      ok = false;
+    } else if (anoNumero > 2014) {
+      mostrarErro(data, 'A idade mínima permitida é de 12 anos');
+      ok = false;
+    }
+
+    var avatar = avatarEscolhido();
+    if (avatar === '') {
+      mostrarErroAvatar('Tem de escolher um avatar');
+      ok = false;
+    }
+
+    if (!ok) return;
+
+    var utilizadores = carregarUtilizadores();
+    utilizadores.push({
+      email: emailNormalizado,
+      password: password.value,
+      avatar: avatar,
+      nome: obterNomeDoEmail(emailNormalizado),
+      jogos: 0,
+      tempo: 0,
+      pontos: 0
+    });
+    guardarUtilizadores(utilizadores);
+    localStorage.setItem(CHAVE_UTILIZADOR_ATUAL, emailNormalizado);
+    window.location.href = 'menu.html';
+  });
+
+  atualizarBotao();
+})();
+
+/* ==================== LOGIN ==================== */
+(function () {
+  var botao = document.getElementById('btn-login');
+  if (!botao) return;
+
+  var email = document.getElementById('email');
+  var password = document.getElementById('password');
+
+  email.addEventListener('input', function () {
+    email.value = email.value.toLowerCase();
+  });
+
+  botao.addEventListener('click', function () {
+    var emailNormalizado = email.value.toLowerCase().trim();
+    email.value = emailNormalizado;
+    var utilizador = procurarUtilizadorPorEmail(emailNormalizado);
+
+    if (utilizador === null) {
+      mostrarErro(email, 'Este email não está registado');
+      return;
+    }
+
+    if (utilizador.password !== password.value) {
+      mostrarErro(password, 'Palavra-passe incorreta');
+      return;
+    }
+
+    localStorage.setItem(CHAVE_UTILIZADOR_ATUAL, emailNormalizado);
+    window.location.href = 'menu.html';
+  });
+})();
+
+/* ==================== TABELAS DE ESTATISTICAS ==================== */
+function formatarTempoTabela(segundos) {
+  var minutos = Math.floor(segundos / 60);
+  var seg = segundos % 60;
+  return minutos + ' min ' + (seg < 10 ? '0' : '') + seg + ' s';
+}
+
+function formatarPontos(pontos) {
+  return String(pontos).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+function utilizadoresOrdenados() {
+  var utilizadores = carregarUtilizadores();
+  utilizadores.sort(function (a, b) {
+    if (b.pontos !== a.pontos) return b.pontos - a.pontos;
+    if (a.tempo !== b.tempo) return a.tempo - b.tempo;
+    return a.nome.localeCompare(b.nome);
+  });
+  return utilizadores.slice(0, 10);
+}
+
+(function () {
+  var tabela = document.querySelector('.estatisticas-tabela tbody');
+  if (!tabela) return;
+
+  var utilizadores = utilizadoresOrdenados();
+  tabela.innerHTML = '';
+
+  for (var i = 0; i < utilizadores.length; i++) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<th scope="row">' + utilizadores[i].nome + '</th>' +
+      '<td>' + utilizadores[i].jogos + '</td>' +
+      '<td>' + formatarTempoTabela(utilizadores[i].tempo) + '</td>' +
+      '<td>' + formatarPontos(utilizadores[i].pontos) + '</td>';
+    tabela.appendChild(tr);
+  }
+})();
+
 /* ==================== TABULEIRO ==================== */
 (function () {
   var grid = document.querySelector('.tabuleiro-grid');
   if (!grid) return;
 
-  /* ---------- Constantes ---------- */
   var LINHAS = 8;
   var COLUNAS = 8;
   var TIPOS = ['vermelha', 'laranja', 'amarela', 'verde', 'azul', 'rosa', 'cinzenta'];
   var CAMINHO_MEDIA = 'Media/joia_';
 
-  /* ---------- Estado do jogo ---------- */
   var tabuleiro = [];
   var celulas = [];
   var primeiraJoia = null;
@@ -69,48 +350,16 @@ Rodrigo Duarte 60354 - PL 23
   var joiasFaltam = 20;
   var timerSegundos = 0;
   var timerIntervalo = null;
+  var jogoJaTerminou = false;
 
-  /* ---------- Elementos de stats ---------- */
   var statsItems = document.querySelectorAll('.stats-item');
 
-  /* ---------- Carregar estado do localStorage ---------- */
-  function carregarEstado() {
-    var estadoGuardado = localStorage.getItem('bejeweledEstado');
-    if (estadoGuardado) {
-      try {
-        var estado = JSON.parse(estadoGuardado);
-        pontuacao = estado.pontuacao || 0;
-        joiasEliminadas = estado.joiasEliminadas || 0;
-        joiasFaltam = estado.joiasFaltam !== undefined ? estado.joiasFaltam : 20;
-        timerSegundos = estado.timerSegundos || 0;
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-    return false;
-  }
-
-  /* ---------- Guardar estado no localStorage ---------- */
-  function guardarEstado() {
-    var estado = {
-      pontuacao: pontuacao,
-      joiasEliminadas: joiasEliminadas,
-      joiasFaltam: joiasFaltam,
-      timerSegundos: timerSegundos
-    };
-    localStorage.setItem('bejeweledEstado', JSON.stringify(estado));
-  }
-
-  /* ---------- Atualizar stats no ecra ---------- */
   function atualizarStats() {
-    if (statsItems[0]) statsItems[0].textContent = 'Pontuacao: ' + pontuacao;
-    if (statsItems[2]) statsItems[2].textContent = 'Numero de joias eliminadas: ' + joiasEliminadas;
-    if (statsItems[3]) statsItems[3].textContent = 'Numero de joias que faltam eliminar: ' + joiasFaltam;
-    guardarEstado();
+    if (statsItems[0]) statsItems[0].textContent = 'Pontuação: ' + pontuacao;
+    if (statsItems[2]) statsItems[2].textContent = 'Número de joias eliminadas: ' + joiasEliminadas;
+    if (statsItems[3]) statsItems[3].textContent = 'Número de joias que faltam eliminar: ' + joiasFaltam;
   }
 
-  /* ---------- Timer ---------- */
   function formatarTempo(seg) {
     var m = Math.floor(seg / 60);
     var s = seg % 60;
@@ -122,11 +371,33 @@ Rodrigo Duarte 60354 - PL 23
     timerIntervalo = setInterval(function () {
       timerSegundos++;
       if (statsItems[1]) statsItems[1].textContent = 'Tempo decorrido: ' + formatarTempo(timerSegundos);
-      guardarEstado();
     }, 1000);
   }
 
-  /* ---------- Gerar tabuleiro aleatorio sem 3 em linha ---------- */
+  function atualizarDadosDoUtilizador() {
+    var emailAtual = localStorage.getItem(CHAVE_UTILIZADOR_ATUAL);
+    if (!emailAtual) return;
+
+    var utilizadores = carregarUtilizadores();
+    for (var i = 0; i < utilizadores.length; i++) {
+      if (utilizadores[i].email === emailAtual) {
+        utilizadores[i].jogos = utilizadores[i].jogos + 1;
+        utilizadores[i].tempo = utilizadores[i].tempo + timerSegundos;
+        utilizadores[i].pontos = utilizadores[i].pontos + pontuacao;
+      }
+    }
+    guardarUtilizadores(utilizadores);
+  }
+
+  function finalizarJogo() {
+    if (jogoJaTerminou) return;
+    jogoJaTerminou = true;
+    jogoAtivo = false;
+    if (timerIntervalo) clearInterval(timerIntervalo);
+    atualizarDadosDoUtilizador();
+    window.location.href = 'jogo-terminado.html';
+  }
+
   function gerarTabuleiro() {
     var valido = false;
     while (!valido) {
@@ -141,71 +412,45 @@ Rodrigo Duarte 60354 - PL 23
     }
   }
 
-  /* ---------- Verificar se ha 3+ do mesmo tipo em linha/coluna ---------- */
   function temTresEmLinha(tab) {
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c <= COLUNAS - 3; c++) {
-        if (tab[l][c] !== null &&
-            tab[l][c] === tab[l][c + 1] &&
-            tab[l][c] === tab[l][c + 2]) {
-          return true;
-        }
+        if (tab[l][c] !== null && tab[l][c] === tab[l][c + 1] && tab[l][c] === tab[l][c + 2]) return true;
       }
     }
     for (var c2 = 0; c2 < COLUNAS; c2++) {
       for (var l2 = 0; l2 <= LINHAS - 3; l2++) {
-        if (tab[l2][c2] !== null &&
-            tab[l2][c2] === tab[l2 + 1][c2] &&
-            tab[l2][c2] === tab[l2 + 2][c2]) {
-          return true;
-        }
+        if (tab[l2][c2] !== null && tab[l2][c2] === tab[l2 + 1][c2] && tab[l2][c2] === tab[l2 + 2][c2]) return true;
       }
     }
     return false;
   }
 
-  /* ---------- Encontrar todos os grupos de 3+ a eliminar ---------- */
   function encontrarParaEliminar(tab) {
     var marcadas = [];
     var l, c;
     for (l = 0; l < LINHAS; l++) {
       marcadas[l] = [];
-      for (c = 0; c < COLUNAS; c++) {
-        marcadas[l][c] = false;
-      }
+      for (c = 0; c < COLUNAS; c++) marcadas[l][c] = false;
     }
 
-    /* linhas */
     for (l = 0; l < LINHAS; l++) {
       for (c = 0; c <= COLUNAS - 3; c++) {
-        if (tab[l][c] !== null &&
-            tab[l][c] === tab[l][c + 1] &&
-            tab[l][c] === tab[l][c + 2]) {
+        if (tab[l][c] !== null && tab[l][c] === tab[l][c + 1] && tab[l][c] === tab[l][c + 2]) {
           var fim = c + 2;
-          while (fim + 1 < COLUNAS && tab[l][fim + 1] === tab[l][c]) {
-            fim++;
-          }
-          for (var k = c; k <= fim; k++) {
-            marcadas[l][k] = true;
-          }
+          while (fim + 1 < COLUNAS && tab[l][fim + 1] === tab[l][c]) fim++;
+          for (var k = c; k <= fim; k++) marcadas[l][k] = true;
           c = fim;
         }
       }
     }
 
-    /* colunas */
     for (var c2 = 0; c2 < COLUNAS; c2++) {
       for (var l2 = 0; l2 <= LINHAS - 3; l2++) {
-        if (tab[l2][c2] !== null &&
-            tab[l2][c2] === tab[l2 + 1][c2] &&
-            tab[l2][c2] === tab[l2 + 2][c2]) {
+        if (tab[l2][c2] !== null && tab[l2][c2] === tab[l2 + 1][c2] && tab[l2][c2] === tab[l2 + 2][c2]) {
           var fim2 = l2 + 2;
-          while (fim2 + 1 < LINHAS && tab[fim2 + 1][c2] === tab[l2][c2]) {
-            fim2++;
-          }
-          for (var k2 = l2; k2 <= fim2; k2++) {
-            marcadas[k2][c2] = true;
-          }
+          while (fim2 + 1 < LINHAS && tab[fim2 + 1][c2] === tab[l2][c2]) fim2++;
+          for (var k2 = l2; k2 <= fim2; k2++) marcadas[k2][c2] = true;
           l2 = fim2;
         }
       }
@@ -214,7 +459,6 @@ Rodrigo Duarte 60354 - PL 23
     return marcadas;
   }
 
-  /* ---------- Contar celulas marcadas ---------- */
   function contarMarcadas(marcadas) {
     var total = 0;
     for (var l = 0; l < LINHAS; l++) {
@@ -225,7 +469,6 @@ Rodrigo Duarte 60354 - PL 23
     return total;
   }
 
-  /* ---------- Desenhar o tabuleiro no DOM ---------- */
   function desenharTabuleiro() {
     grid.innerHTML = '';
     celulas = [];
@@ -240,13 +483,7 @@ Rodrigo Duarte 60354 - PL 23
         var img = document.createElement('img');
         img.className = 'joia-imagem';
         img.alt = 'joia';
-
-        if (tabuleiro[l][c] !== null) {
-          img.src = CAMINHO_MEDIA + tabuleiro[l][c] + '.png';
-        } else {
-          img.src = '';
-          img.style.visibility = 'hidden';
-        }
+        img.src = CAMINHO_MEDIA + tabuleiro[l][c] + '.png';
 
         celula.appendChild(img);
         celula.addEventListener('click', aoClicarCelula);
@@ -256,7 +493,6 @@ Rodrigo Duarte 60354 - PL 23
     }
   }
 
-  /* ---------- Atualizar imagem de uma celula ---------- */
   function atualizarCelula(l, c) {
     var celula = celulas[l][c];
     if (!celula) return;
@@ -271,15 +507,11 @@ Rodrigo Duarte 60354 - PL 23
     }
   }
 
-  /* ---------- Remover selecao visual ---------- */
   function limparSelecao() {
-    if (primeiraJoia) {
-      celulas[primeiraJoia.linha][primeiraJoia.coluna].classList.remove('joia-selecionada');
-    }
+    if (primeiraJoia) celulas[primeiraJoia.linha][primeiraJoia.coluna].classList.remove('joia-selecionada');
     primeiraJoia = null;
   }
 
-  /* ---------- Mostrar popup de aviso ---------- */
   function mostrarAviso(msg) {
     var popup = document.getElementById('popup-aviso');
     if (!popup) {
@@ -294,21 +526,18 @@ Rodrigo Duarte 60354 - PL 23
     }, 3000);
   }
 
-  /* ---------- Verificar se duas posicoes sao adjacentes ---------- */
   function saoAdjacentes(l1, c1, l2, c2) {
     var difLinha = Math.abs(l1 - l2);
     var difColuna = Math.abs(c1 - c2);
     return (difLinha === 1 && difColuna === 0) || (difLinha === 0 && difColuna === 1);
   }
 
-  /* ---------- Trocar duas joias no tabuleiro ---------- */
   function trocarJoias(l1, c1, l2, c2) {
     var temp = tabuleiro[l1][c1];
     tabuleiro[l1][c1] = tabuleiro[l2][c2];
     tabuleiro[l2][c2] = temp;
   }
 
-  /* ---------- Verificar se uma troca cria 3 ou mais em linha ---------- */
   function trocaCriaEliminacao(l1, c1, l2, c2) {
     trocarJoias(l1, c1, l2, c2);
     var marcadas = encontrarParaEliminar(tabuleiro);
@@ -317,7 +546,6 @@ Rodrigo Duarte 60354 - PL 23
     return temElim;
   }
 
-  /* ---------- Eliminar joias marcadas ---------- */
   function eliminarJoias(marcadas) {
     var quantidade = 0;
     for (var l = 0; l < LINHAS; l++) {
@@ -332,7 +560,6 @@ Rodrigo Duarte 60354 - PL 23
     return quantidade;
   }
 
-  /* ---------- Fazer descer joias para preencher espacos vazios ---------- */
   function descerJoias() {
     for (var c = 0; c < COLUNAS; c++) {
       for (var l = LINHAS - 1; l >= 0; l--) {
@@ -351,7 +578,6 @@ Rodrigo Duarte 60354 - PL 23
     }
   }
 
-  /* ---------- Processar eliminacoes em cascata ---------- */
   function processarCascata() {
     var marcadas = encontrarParaEliminar(tabuleiro);
     var quantidade = contarMarcadas(marcadas);
@@ -360,47 +586,42 @@ Rodrigo Duarte 60354 - PL 23
       var eliminadas = eliminarJoias(marcadas);
       joiasEliminadas += eliminadas;
       pontuacao += eliminadas * 10;
-      if (joiasFaltam > 0) {
-        joiasFaltam = Math.max(0, joiasFaltam - eliminadas);
-      }
+      if (joiasFaltam > 0) joiasFaltam = Math.max(0, joiasFaltam - eliminadas);
       atualizarStats();
+
+      if (joiasFaltam === 0) {
+        finalizarJogo();
+        return;
+      }
+
       descerJoias();
       processarCascata();
     } else {
-      /* Sem mais eliminacoes por cascata - preencher os espacos vazios */
       preencherVaziosSeguro();
       jogoAtivo = true;
     }
   }
 
-  /* ---------- Preencher espacos vazios de forma segura (sem causar eliminacao) ---------- */
   function preencherVaziosSeguro() {
-    /* Guardar quais posicoes estao vazias */
     var posicoesvazias = [];
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c < COLUNAS; c++) {
-        if (tabuleiro[l][c] === null) {
-          posicoesvazias.push({ linha: l, coluna: c });
-        }
+        if (tabuleiro[l][c] === null) posicoesvazias.push({ linha: l, coluna: c });
       }
     }
 
     if (posicoesvazias.length === 0) return;
 
-    /* Tentar preencher as posicoes vazias sem causar eliminacao */
     var valido = false;
     while (!valido) {
-      /* Preencher cada posicao vazia com uma joia aleatoria */
       for (var i = 0; i < posicoesvazias.length; i++) {
         var pos = posicoesvazias[i];
         tabuleiro[pos.linha][pos.coluna] = TIPOS[Math.floor(Math.random() * TIPOS.length)];
       }
-      /* Verificar se o tabuleiro agora tem eliminacoes */
       var marcadas = encontrarParaEliminar(tabuleiro);
       if (contarMarcadas(marcadas) === 0) {
         valido = true;
       } else {
-        /* Voltar a por null nas posicoes vazias e tentar outra vez */
         for (var j = 0; j < posicoesvazias.length; j++) {
           var pos2 = posicoesvazias[j];
           tabuleiro[pos2.linha][pos2.coluna] = null;
@@ -408,14 +629,12 @@ Rodrigo Duarte 60354 - PL 23
       }
     }
 
-    /* Mostrar as joias novas no DOM */
     for (var k = 0; k < posicoesvazias.length; k++) {
       var pos3 = posicoesvazias[k];
       atualizarCelula(pos3.linha, pos3.coluna);
     }
   }
 
-  /* ---------- Ao clicar numa celula ---------- */
   function aoClicarCelula(evento) {
     if (!jogoAtivo) return;
 
@@ -428,10 +647,8 @@ Rodrigo Duarte 60354 - PL 23
     if (primeiraJoia === null) {
       primeiraJoia = { linha: l, coluna: c };
       celula.classList.add('joia-selecionada');
-
     } else if (primeiraJoia.linha === l && primeiraJoia.coluna === c) {
       limparSelecao();
-
     } else if (saoAdjacentes(primeiraJoia.linha, primeiraJoia.coluna, l, c)) {
       var l1 = primeiraJoia.linha;
       var c1 = primeiraJoia.coluna;
@@ -445,9 +662,8 @@ Rodrigo Duarte 60354 - PL 23
         processarCascata();
       } else {
         limparSelecao();
-        mostrarAviso('Uma troca de joias so e permitida se fizer com que tres ou mais joias iguais fiquem alinhadas na horizontal ou na vertical');
+        mostrarAviso('Uma troca de joias só é permitida se fizer com que três ou mais joias iguais fiquem alinhadas na horizontal ou na vertical');
       }
-
     } else {
       limparSelecao();
       primeiraJoia = { linha: l, coluna: c };
@@ -455,17 +671,42 @@ Rodrigo Duarte 60354 - PL 23
     }
   }
 
-  /* ---------- Iniciar o jogo ---------- */
+  function criarPopupTerminarJogo() {
+    var botaoTerminar = document.getElementById('btn-terminar-jogo');
+    if (!botaoTerminar) return;
+
+    botaoTerminar.addEventListener('click', function () {
+      jogoAtivo = false;
+      var fundo = document.createElement('div');
+      fundo.className = 'popup-terminar-fundo';
+      fundo.innerHTML = '<div class="popup-terminar-caixa">' +
+        '<p>Tem a certeza que deseja terminar o jogo?</p>' +
+        '<div class="popup-terminar-botoes">' +
+        '<button type="button" id="popup-sim" class="popup-botao-sim">Sim</button>' +
+        '<button type="button" id="popup-nao" class="popup-botao-nao">Não</button>' +
+        '</div></div>';
+      document.body.appendChild(fundo);
+
+      document.getElementById('popup-nao').addEventListener('click', function () {
+        document.body.removeChild(fundo);
+        jogoAtivo = true;
+      });
+
+      document.getElementById('popup-sim').addEventListener('click', function () {
+        finalizarJogo();
+      });
+    });
+  }
+
   function iniciarJogo() {
-    carregarEstado();
     gerarTabuleiro();
     desenharTabuleiro();
     atualizarStats();
     if (statsItems[1]) statsItems[1].textContent = 'Tempo decorrido: ' + formatarTempo(timerSegundos);
     iniciarTimer();
+    criarPopupTerminarJogo();
     jogoAtivo = true;
   }
 
   iniciarJogo();
-
 })();

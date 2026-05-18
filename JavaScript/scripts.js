@@ -255,7 +255,7 @@ function mostrarErroAvatar(texto) {
     });
     guardarUtilizadores(utilizadores);
     localStorage.setItem(CHAVE_UTILIZADOR_ATUAL, emailNormalizado);
-    window.location.href = 'menu.html';
+    window.location.href = 'index.html';
   });
 
   atualizarBotao();

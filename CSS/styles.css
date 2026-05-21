@@ -892,3 +892,34 @@ input {
 .pagina-registo form .avatar input {
   width: auto;
 }
+
+/* === ANIMACOES DO TABULEIRO === */
+.joia-imagem {
+  transition: transform 0.6s ease, opacity 2.2s ease;
+}
+
+.joia-a-trocar {
+  position: relative;
+  z-index: 5;
+}
+
+.joia-a-desaparecer {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.joia-nova {
+  animation: aparecer-joia 0.5s ease;
+}
+
+@keyframes aparecer-joia {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -78,28 +78,70 @@ function carregarUtilizadores() {
     }
   }
 
+  if (!Array.isArray(utilizadores)) utilizadores = [];
+
+  /*
+    Limpa utilizadores repetidos que possam ter ficado guardados
+    em versões anteriores do trabalho.
+  */
+  var limpos = [];
+
+  function prepararUtilizador(u) {
+    if (!u) return null;
+
+    var email = String(u.email || '').toLowerCase().trim();
+    var nome = String(u.nome || '').toLowerCase().trim();
+
+    if (email.indexOf('@') !== -1) {
+      nome = obterNomeDoEmail(email).toLowerCase();
+    } else if (nome !== '') {
+      email = nome + '@bejeweled.local';
+    } else {
+      return null;
+    }
+
+    return {
+      email: email,
+      password: String(u.password || '1234'),
+      avatar: u.avatar || 'a.png',
+      nome: nome,
+      jogos: Number(u.jogos) || 0,
+      tempo: Number(u.tempo) || 0,
+      pontos: Number(u.pontos) || 0
+    };
+  }
+
+  function juntarUtilizador(novo) {
+    if (novo === null) return;
+
+    for (var i = 0; i < limpos.length; i++) {
+      if (limpos[i].email === novo.email || limpos[i].nome === novo.nome) {
+        /* Mantem apenas uma linha por utilizador. */
+        limpos[i].email = novo.email.indexOf('@bejeweled.local') === -1 ? novo.email : limpos[i].email;
+        limpos[i].password = limpos[i].password || novo.password;
+        limpos[i].avatar = limpos[i].avatar || novo.avatar;
+        limpos[i].jogos = Math.max(limpos[i].jogos, novo.jogos);
+        limpos[i].tempo = Math.max(limpos[i].tempo, novo.tempo);
+        limpos[i].pontos = Math.max(limpos[i].pontos, novo.pontos);
+        return;
+      }
+    }
+
+    limpos.push(novo);
+  }
+
   for (var i = 0; i < utilizadores.length; i++) {
-    utilizadores[i].email = String(utilizadores[i].email).toLowerCase();
-    utilizadores[i].nome = obterNomeDoEmail(utilizadores[i].email);
-    utilizadores[i].jogos = Number(utilizadores[i].jogos) || 0;
-    utilizadores[i].tempo = Number(utilizadores[i].tempo) || 0;
-    utilizadores[i].pontos = Number(utilizadores[i].pontos) || 0;
-    if (!utilizadores[i].avatar) utilizadores[i].avatar = 'a.png';
+    juntarUtilizador(prepararUtilizador(utilizadores[i]));
   }
 
   var predefinidos = utilizadoresPredefinidos();
   for (var p = 0; p < predefinidos.length; p++) {
-    var existe = false;
-    for (var u = 0; u < utilizadores.length; u++) {
-      if (utilizadores[u].email === predefinidos[p].email) existe = true;
-    }
-    if (!existe) utilizadores.push(predefinidos[p]);
+    juntarUtilizador(prepararUtilizador(predefinidos[p]));
   }
 
-  guardarUtilizadores(utilizadores);
-  return utilizadores;
+  guardarUtilizadores(limpos);
+  return limpos;
 }
-
 function guardarUtilizadores(utilizadores) {
   localStorage.setItem(CHAVE_UTILIZADORES, JSON.stringify(utilizadores));
 }
@@ -255,7 +297,7 @@ function mostrarErroAvatar(texto) {
     });
     guardarUtilizadores(utilizadores);
     localStorage.setItem(CHAVE_UTILIZADOR_ATUAL, emailNormalizado);
-    window.location.href = 'index.html';
+    window.location.href = 'menu.html';
   });
 
   atualizarBotao();
@@ -546,18 +588,69 @@ function utilizadoresOrdenados() {
     return temElim;
   }
 
+  function esperar(ms) {
+    return new Promise(function (resolve) {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  function animarTroca(l1, c1, l2, c2) {
+    var img1 = celulas[l1][c1].querySelector('.joia-imagem');
+    var img2 = celulas[l2][c2].querySelector('.joia-imagem');
+    if (!img1 || !img2) return esperar(0);
+
+    var r1 = img1.getBoundingClientRect();
+    var r2 = img2.getBoundingClientRect();
+    var dx = r2.left - r1.left;
+    var dy = r2.top - r1.top;
+
+    img1.classList.add('joia-a-trocar');
+    img2.classList.add('joia-a-trocar');
+
+    setTimeout(function () {
+      img1.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+      img2.style.transform = 'translate(' + (-dx) + 'px, ' + (-dy) + 'px)';
+    }, 20);
+
+    return esperar(650).then(function () {
+      img1.classList.remove('joia-a-trocar');
+      img2.classList.remove('joia-a-trocar');
+      img1.style.transform = '';
+      img2.style.transform = '';
+    });
+  }
+
   function eliminarJoias(marcadas) {
     var quantidade = 0;
+    var imagens = [];
+
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c < COLUNAS; c++) {
         if (marcadas[l][c]) {
-          tabuleiro[l][c] = null;
-          atualizarCelula(l, c);
+          var img = celulas[l][c].querySelector('.joia-imagem');
+          if (img) imagens.push(img);
           quantidade++;
         }
       }
     }
-    return quantidade;
+
+    for (var i = 0; i < imagens.length; i++) {
+      imagens[i].classList.add('joia-a-desaparecer');
+    }
+
+    return esperar(2200).then(function () {
+      for (var l2 = 0; l2 < LINHAS; l2++) {
+        for (var c2 = 0; c2 < COLUNAS; c2++) {
+          if (marcadas[l2][c2]) {
+            tabuleiro[l2][c2] = null;
+            var img2 = celulas[l2][c2].querySelector('.joia-imagem');
+            if (img2) img2.classList.remove('joia-a-desaparecer');
+            atualizarCelula(l2, c2);
+          }
+        }
+      }
+      return quantidade;
+    });
   }
 
   function descerJoias() {
@@ -578,12 +671,12 @@ function utilizadoresOrdenados() {
     }
   }
 
-  function processarCascata() {
+  async function processarCascata() {
     var marcadas = encontrarParaEliminar(tabuleiro);
     var quantidade = contarMarcadas(marcadas);
 
     if (quantidade > 0) {
-      var eliminadas = eliminarJoias(marcadas);
+      var eliminadas = await eliminarJoias(marcadas);
       joiasEliminadas += eliminadas;
       pontuacao += eliminadas * 10;
       if (joiasFaltam > 0) joiasFaltam = Math.max(0, joiasFaltam - eliminadas);
@@ -595,14 +688,14 @@ function utilizadoresOrdenados() {
       }
 
       descerJoias();
-      processarCascata();
+      await processarCascata();
     } else {
-      preencherVaziosSeguro();
+      await preencherVaziosSeguro();
       jogoAtivo = true;
     }
   }
 
-  function preencherVaziosSeguro() {
+  async function preencherVaziosSeguro() {
     var posicoesvazias = [];
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c < COLUNAS; c++) {
@@ -618,6 +711,7 @@ function utilizadoresOrdenados() {
         var pos = posicoesvazias[i];
         tabuleiro[pos.linha][pos.coluna] = TIPOS[Math.floor(Math.random() * TIPOS.length)];
       }
+
       var marcadas = encontrarParaEliminar(tabuleiro);
       if (contarMarcadas(marcadas) === 0) {
         valido = true;
@@ -629,13 +723,28 @@ function utilizadoresOrdenados() {
       }
     }
 
+    posicoesvazias.sort(function (a, b) {
+      if (a.linha !== b.linha) return a.linha - b.linha;
+      return a.coluna - b.coluna;
+    });
+
     for (var k = 0; k < posicoesvazias.length; k++) {
       var pos3 = posicoesvazias[k];
       atualizarCelula(pos3.linha, pos3.coluna);
+      var img = celulas[pos3.linha][pos3.coluna].querySelector('.joia-imagem');
+      if (img) {
+        img.classList.add('joia-nova');
+        setTimeout((function (imagem) {
+          return function () {
+            imagem.classList.remove('joia-nova');
+          };
+        })(img), 500);
+      }
+      await esperar(180);
     }
   }
 
-  function aoClicarCelula(evento) {
+  async function aoClicarCelula(evento) {
     if (!jogoAtivo) return;
 
     var celula = evento.currentTarget;
@@ -656,10 +765,11 @@ function utilizadoresOrdenados() {
       if (trocaCriaEliminacao(l1, c1, l, c)) {
         limparSelecao();
         jogoAtivo = false;
+        await animarTroca(l1, c1, l, c);
         trocarJoias(l1, c1, l, c);
         atualizarCelula(l1, c1);
         atualizarCelula(l, c);
-        processarCascata();
+        await processarCascata();
       } else {
         limparSelecao();
         mostrarAviso('Uma troca de joias só é permitida se fizer com que três ou mais joias iguais fiquem alinhadas na horizontal ou na vertical');

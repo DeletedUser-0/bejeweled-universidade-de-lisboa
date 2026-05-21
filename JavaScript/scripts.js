@@ -727,7 +727,7 @@ function utilizadoresOrdenados() {
     if (quantidade > 0) {
       var eliminadas = await eliminarJoias(marcadas);
       joiasEliminadas += eliminadas;
-      pontuacao += eliminadas * 10;
+      pontuacao += 10 * (eliminadas - 2);
       if (joiasFaltam > 0) joiasFaltam = Math.max(0, joiasFaltam - eliminadas);
       atualizarStats();
 

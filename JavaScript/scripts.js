@@ -297,7 +297,7 @@ function mostrarErroAvatar(texto) {
     });
     guardarUtilizadores(utilizadores);
     localStorage.setItem(CHAVE_UTILIZADOR_ATUAL, emailNormalizado);
-    window.location.href = 'menu.html';
+    window.location.href = 'index.html';
   });
 
   atualizarBotao();
@@ -653,22 +653,71 @@ function utilizadoresOrdenados() {
     });
   }
 
-  function descerJoias() {
+  async function descerJoias() {
+    // Simple falling animation: for each column, move images down visually using clones
+    var animacoes = [];
+
     for (var c = 0; c < COLUNAS; c++) {
       for (var l = LINHAS - 1; l >= 0; l--) {
         if (tabuleiro[l][c] === null) {
           for (var l2 = l - 1; l2 >= 0; l2--) {
             if (tabuleiro[l2][c] !== null) {
+              // move model
               tabuleiro[l][c] = tabuleiro[l2][c];
               tabuleiro[l2][c] = null;
-              atualizarCelula(l, c);
-              atualizarCelula(l2, c);
+
+              // animate DOM: create a clone of the image and translate it from source to dest
+              (function (srcL, srcC, dstL, dstC) {
+                var srcCell = celulas[srcL][srcC];
+                var dstCell = celulas[dstL][dstC];
+                var srcImg = srcCell && srcCell.querySelector('.joia-imagem');
+                if (!srcImg || !dstCell) return;
+
+                // ensure destination updated (hidden until animation ends)
+                atualizarCelula(dstL, dstC);
+
+                var clone = srcImg.cloneNode(true);
+                clone.classList.add('joia-caindo');
+                // position the clone absolutely over the source image
+                var rSrc = srcImg.getBoundingClientRect();
+                clone.style.position = 'fixed';
+                clone.style.left = rSrc.left + 'px';
+                clone.style.top = rSrc.top + 'px';
+                clone.style.width = rSrc.width + 'px';
+                clone.style.height = rSrc.height + 'px';
+                clone.style.margin = '0';
+                clone.style.transition = 'transform 450ms ease, top 450ms ease, left 450ms ease';
+
+                document.body.appendChild(clone);
+
+                var p = new Promise(function (resolve) {
+                  // force reflow
+                  void clone.offsetWidth;
+                  var rDst = dstCell.getBoundingClientRect();
+                  var dx = rDst.left - rSrc.left;
+                  var dy = rDst.top - rSrc.top;
+                  clone.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+
+                  setTimeout(function () {
+                    // remove clone and reveal destination image
+                    if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
+                    atualizarCelula(dstL, dstC);
+                    resolve();
+                  }, 500);
+                });
+
+                animacoes.push(p);
+              })(l2, c, l, c);
+
               break;
             }
           }
         }
       }
     }
+
+    // wait for all animations to complete
+    if (animacoes.length > 0) await Promise.all(animacoes);
   }
 
   async function processarCascata() {

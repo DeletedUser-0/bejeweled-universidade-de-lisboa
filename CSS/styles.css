@@ -912,6 +912,12 @@ input {
   animation: aparecer-joia 0.5s ease;
 }
 
+/* Animação simples para joias a cair (quando descem para preencher espaços vazios) */
+.joia-caindo {
+  pointer-events: none;
+  z-index: 20;
+}
+
 @keyframes aparecer-joia {
   from {
     transform: scale(0);

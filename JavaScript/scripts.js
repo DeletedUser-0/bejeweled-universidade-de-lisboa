@@ -51,12 +51,13 @@ Rodrigo Duarte 60354 - PL 23
 /* ==================== DADOS DOS UTILIZADORES ==================== */
 var CHAVE_UTILIZADORES = 'bejeweledUtilizadores';
 var CHAVE_UTILIZADOR_ATUAL = 'bejeweledUtilizadorAtual';
+var CHAVE_UTILIZADOR_ATUAL_2 = 'bejeweledUtilizadorAtual2';
 
 function utilizadoresPredefinidos() {
   return [
-    { email: 'pedro@bejeweled.local', password: '1234', avatar: 'a.png', nome: 'pedro', jogos: 31, tempo: 3303, pontos: 15100 },
-    { email: 'joao@bejeweled.local', password: '1234', avatar: 'b.png', nome: 'joao', jogos: 18, tempo: 2535, pontos: 12450 },
-    { email: 'martim@bejeweled.local', password: '1234', avatar: 'c.png', nome: 'martim', jogos: 9, tempo: 4120, pontos: 8920 }
+    { email: 'pedro@bejeweled.local', password: '1234', avatar: 'a.png', nome: 'pedro', jogos: 31, jogos2: 0, tempo: 3303, pontos: 15100 },
+    { email: 'joao@bejeweled.local', password: '1234', avatar: 'b.png', nome: 'joao', jogos: 18, jogos2: 0, tempo: 2535, pontos: 12450 },
+    { email: 'martim@bejeweled.local', password: '1234', avatar: 'c.png', nome: 'martim', jogos: 9, jogos2: 0, tempo: 4120, pontos: 8920 }
   ];
 }
 
@@ -106,6 +107,7 @@ function carregarUtilizadores() {
       avatar: u.avatar || 'a.png',
       nome: nome,
       jogos: Number(u.jogos) || 0,
+      jogos2: Number(u.jogos2) || 0,
       tempo: Number(u.tempo) || 0,
       pontos: Number(u.pontos) || 0
     };
@@ -121,6 +123,7 @@ function carregarUtilizadores() {
         limpos[i].password = limpos[i].password || novo.password;
         limpos[i].avatar = limpos[i].avatar || novo.avatar;
         limpos[i].jogos = Math.max(limpos[i].jogos, novo.jogos);
+        limpos[i].jogos2 = Math.max(limpos[i].jogos2 || 0, novo.jogos2 || 0);
         limpos[i].tempo = Math.max(limpos[i].tempo, novo.tempo);
         limpos[i].pontos = Math.max(limpos[i].pontos, novo.pontos);
         return;
@@ -292,6 +295,7 @@ function mostrarErroAvatar(texto) {
       avatar: avatar,
       nome: obterNomeDoEmail(emailNormalizado),
       jogos: 0,
+      jogos2: 0,
       tempo: 0,
       pontos: 0
     });
@@ -335,6 +339,60 @@ function mostrarErroAvatar(texto) {
   });
 })();
 
+
+
+/* ==================== LOGIN DOIS JOGADORES ==================== */
+(function () {
+  var botao = document.getElementById('btn-login-dois');
+  if (!botao) return;
+
+  var email1 = document.getElementById('email-jogador1');
+  var pass1 = document.getElementById('password-jogador1');
+  var email2 = document.getElementById('email-jogador2');
+  var pass2 = document.getElementById('password-jogador2');
+
+  email1.addEventListener('input', function () { email1.value = email1.value.toLowerCase(); });
+  email2.addEventListener('input', function () { email2.value = email2.value.toLowerCase(); });
+
+  botao.addEventListener('click', function () {
+    var e1 = email1.value.toLowerCase().trim();
+    var e2 = email2.value.toLowerCase().trim();
+    email1.value = e1;
+    email2.value = e2;
+
+    var u1 = procurarUtilizadorPorEmail(e1);
+    var u2 = procurarUtilizadorPorEmail(e2);
+    var ok = true;
+
+    if (u1 === null) {
+      mostrarErro(email1, 'Este email não está registado');
+      ok = false;
+    } else if (u1.password !== pass1.value) {
+      mostrarErro(pass1, 'Palavra-passe incorreta');
+      ok = false;
+    }
+
+    if (u2 === null) {
+      mostrarErro(email2, 'Este email não está registado');
+      ok = false;
+    } else if (u2.password !== pass2.value) {
+      mostrarErro(pass2, 'Palavra-passe incorreta');
+      ok = false;
+    }
+
+    if (e1 !== '' && e1 === e2) {
+      mostrarErro(email2, 'Escolha outro utilizador');
+      ok = false;
+    }
+
+    if (!ok) return;
+
+    localStorage.setItem(CHAVE_UTILIZADOR_ATUAL, e1);
+    localStorage.setItem(CHAVE_UTILIZADOR_ATUAL_2, e2);
+    window.location.href = 'tabuleiro-dois-jogadores.html';
+  });
+})();
+
 /* ==================== TABELAS DE ESTATISTICAS ==================== */
 function formatarTempoTabela(segundos) {
   var minutos = Math.floor(segundos / 60);
@@ -367,10 +425,469 @@ function utilizadoresOrdenados() {
     var tr = document.createElement('tr');
     tr.innerHTML = '<th scope="row">' + utilizadores[i].nome + '</th>' +
       '<td>' + utilizadores[i].jogos + '</td>' +
+      '<td>' + (utilizadores[i].jogos2 || 0) + '</td>' +
       '<td>' + formatarTempoTabela(utilizadores[i].tempo) + '</td>' +
       '<td>' + formatarPontos(utilizadores[i].pontos) + '</td>';
     tabela.appendChild(tr);
   }
+})();
+
+
+
+/* ==================== TABULEIRO DOIS JOGADORES ==================== */
+(function () {
+  var grid = document.querySelector('.tabuleiro-grid-dois');
+  if (!grid) return;
+
+  var LINHAS = 10;
+  var COLUNAS = 10;
+  var TIPOS = ['vermelha', 'laranja', 'amarela', 'verde', 'azul', 'rosa', 'cinzenta'];
+  var CAMINHO_MEDIA = 'Media/joia_';
+
+  var tabuleiro = [];
+  var celulas = [];
+  var primeiraJoia = null;
+  var jogoAtivo = false;
+  var timerIntervalo = null;
+  var jogoConcluido = false;
+  var jogoJaTerminou = false;
+  var jogadorAtual = 0;
+  var turnosFeitos = [0, 0];
+
+  var jogadores = [
+    { email: localStorage.getItem(CHAVE_UTILIZADOR_ATUAL), nome: 'jogador1', pontos: 0, tempo: 0, joias: 0 },
+    { email: localStorage.getItem(CHAVE_UTILIZADOR_ATUAL_2), nome: 'jogador2', pontos: 0, tempo: 0, joias: 0 }
+  ];
+
+  var u1 = jogadores[0].email ? procurarUtilizadorPorEmail(jogadores[0].email) : null;
+  var u2 = jogadores[1].email ? procurarUtilizadorPorEmail(jogadores[1].email) : null;
+  if (u1) jogadores[0].nome = u1.nome;
+  if (u2) jogadores[1].nome = u2.nome;
+
+  function formatarTempo(seg) {
+    var m = Math.floor(seg / 60);
+    var s = seg % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function atualizarStatsDois() {
+    document.getElementById('nome-jogador1').textContent = 'Jogador ' + jogadores[0].nome;
+    document.getElementById('pontos-jogador1').textContent = 'Pontuação: ' + jogadores[0].pontos;
+    document.getElementById('tempo-jogador1').textContent = 'Tempo decorrido: ' + formatarTempo(jogadores[0].tempo);
+    document.getElementById('joias-jogador1').textContent = 'Número de joias eliminadas: ' + jogadores[0].joias;
+
+    document.getElementById('nome-jogador2').textContent = 'Jogador ' + jogadores[1].nome;
+    document.getElementById('pontos-jogador2').textContent = 'Pontuação: ' + jogadores[1].pontos;
+    document.getElementById('tempo-jogador2').textContent = 'Tempo decorrido: ' + formatarTempo(jogadores[1].tempo);
+    document.getElementById('joias-jogador2').textContent = 'Número de joias eliminadas: ' + jogadores[1].joias;
+
+    document.getElementById('caixa-jogador1').classList.toggle('jogador-ativo', jogadorAtual === 0);
+    document.getElementById('caixa-jogador2').classList.toggle('jogador-ativo', jogadorAtual === 1);
+  }
+
+  function esperar(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  function gerarTabuleiro() {
+    var valido = false;
+    while (!valido) {
+      tabuleiro = [];
+      for (var l = 0; l < LINHAS; l++) {
+        tabuleiro[l] = [];
+        for (var c = 0; c < COLUNAS; c++) {
+          tabuleiro[l][c] = TIPOS[Math.floor(Math.random() * TIPOS.length)];
+        }
+      }
+      valido = !temTresEmLinha(tabuleiro) && existeJogadaPossivel();
+    }
+  }
+
+  function temTresEmLinha(tab) {
+    for (var l = 0; l < LINHAS; l++) {
+      for (var c = 0; c <= COLUNAS - 3; c++) {
+        if (tab[l][c] !== null && tab[l][c] === tab[l][c + 1] && tab[l][c] === tab[l][c + 2]) return true;
+      }
+    }
+    for (var c2 = 0; c2 < COLUNAS; c2++) {
+      for (var l2 = 0; l2 <= LINHAS - 3; l2++) {
+        if (tab[l2][c2] !== null && tab[l2][c2] === tab[l2 + 1][c2] && tab[l2][c2] === tab[l2 + 2][c2]) return true;
+      }
+    }
+    return false;
+  }
+
+  function encontrarParaEliminar(tab) {
+    var marcadas = [];
+    var l, c;
+    for (l = 0; l < LINHAS; l++) {
+      marcadas[l] = [];
+      for (c = 0; c < COLUNAS; c++) marcadas[l][c] = false;
+    }
+
+    for (l = 0; l < LINHAS; l++) {
+      for (c = 0; c <= COLUNAS - 3; c++) {
+        if (tab[l][c] !== null && tab[l][c] === tab[l][c + 1] && tab[l][c] === tab[l][c + 2]) {
+          var fim = c + 2;
+          while (fim + 1 < COLUNAS && tab[l][fim + 1] === tab[l][c]) fim++;
+          for (var k = c; k <= fim; k++) marcadas[l][k] = true;
+          c = fim;
+        }
+      }
+    }
+
+    for (var c2 = 0; c2 < COLUNAS; c2++) {
+      for (var l2 = 0; l2 <= LINHAS - 3; l2++) {
+        if (tab[l2][c2] !== null && tab[l2][c2] === tab[l2 + 1][c2] && tab[l2][c2] === tab[l2 + 2][c2]) {
+          var fim2 = l2 + 2;
+          while (fim2 + 1 < LINHAS && tab[fim2 + 1][c2] === tab[l2][c2]) fim2++;
+          for (var k2 = l2; k2 <= fim2; k2++) marcadas[k2][c2] = true;
+          l2 = fim2;
+        }
+      }
+    }
+    return marcadas;
+  }
+
+  function contarMarcadas(marcadas) {
+    var total = 0;
+    for (var l = 0; l < LINHAS; l++) {
+      for (var c = 0; c < COLUNAS; c++) {
+        if (marcadas[l][c]) total++;
+      }
+    }
+    return total;
+  }
+
+  function desenharTabuleiro() {
+    grid.innerHTML = '';
+    celulas = [];
+    for (var l = 0; l < LINHAS; l++) {
+      celulas[l] = [];
+      for (var c = 0; c < COLUNAS; c++) {
+        var celula = document.createElement('div');
+        celula.className = 'celula-tabuleiro';
+        celula.dataset.linha = l;
+        celula.dataset.coluna = c;
+
+        var img = document.createElement('img');
+        img.className = 'joia-imagem';
+        img.alt = 'joia';
+        img.src = CAMINHO_MEDIA + tabuleiro[l][c] + '.png';
+
+        celula.appendChild(img);
+        celula.addEventListener('click', aoClicarCelula);
+        grid.appendChild(celula);
+        celulas[l][c] = celula;
+      }
+    }
+  }
+
+  function atualizarCelula(l, c) {
+    var img = celulas[l][c].querySelector('.joia-imagem');
+    if (tabuleiro[l][c] !== null) {
+      img.src = CAMINHO_MEDIA + tabuleiro[l][c] + '.png';
+      img.style.visibility = 'visible';
+    } else {
+      img.src = '';
+      img.style.visibility = 'hidden';
+    }
+  }
+
+  function limparSelecao() {
+    if (primeiraJoia) celulas[primeiraJoia.linha][primeiraJoia.coluna].classList.remove('joia-selecionada');
+    primeiraJoia = null;
+  }
+
+  function saoAdjacentes(l1, c1, l2, c2) {
+    var dl = Math.abs(l1 - l2);
+    var dc = Math.abs(c1 - c2);
+    return (dl === 1 && dc === 0) || (dl === 0 && dc === 1);
+  }
+
+  function trocarJoias(l1, c1, l2, c2) {
+    var temp = tabuleiro[l1][c1];
+    tabuleiro[l1][c1] = tabuleiro[l2][c2];
+    tabuleiro[l2][c2] = temp;
+  }
+
+  function trocaCriaEliminacao(l1, c1, l2, c2) {
+    trocarJoias(l1, c1, l2, c2);
+    var marcadas = encontrarParaEliminar(tabuleiro);
+    var tem = contarMarcadas(marcadas) > 0;
+    trocarJoias(l1, c1, l2, c2);
+    return tem;
+  }
+
+  function existeJogadaPossivel() {
+    for (var l = 0; l < LINHAS; l++) {
+      for (var c = 0; c < COLUNAS; c++) {
+        if (tabuleiro[l][c] === null) continue;
+        if (c + 1 < COLUNAS && tabuleiro[l][c + 1] !== null && trocaCriaEliminacao(l, c, l, c + 1)) return true;
+        if (l + 1 < LINHAS && tabuleiro[l + 1][c] !== null && trocaCriaEliminacao(l, c, l + 1, c)) return true;
+      }
+    }
+    return false;
+  }
+
+  function animarTroca(l1, c1, l2, c2) {
+    var img1 = celulas[l1][c1].querySelector('.joia-imagem');
+    var img2 = celulas[l2][c2].querySelector('.joia-imagem');
+    var r1 = img1.getBoundingClientRect();
+    var r2 = img2.getBoundingClientRect();
+    var dx = r2.left - r1.left;
+    var dy = r2.top - r1.top;
+
+    img1.classList.add('joia-a-trocar');
+    img2.classList.add('joia-a-trocar');
+    setTimeout(function () {
+      img1.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+      img2.style.transform = 'translate(' + (-dx) + 'px, ' + (-dy) + 'px)';
+    }, 20);
+
+    return esperar(230).then(function () {
+      img1.classList.remove('joia-a-trocar');
+      img2.classList.remove('joia-a-trocar');
+      img1.style.transform = '';
+      img2.style.transform = '';
+    });
+  }
+
+  function eliminarJoias(marcadas) {
+    var quantidade = 0;
+    var imagens = [];
+    for (var l = 0; l < LINHAS; l++) {
+      for (var c = 0; c < COLUNAS; c++) {
+        if (marcadas[l][c]) {
+          quantidade++;
+          imagens.push(celulas[l][c].querySelector('.joia-imagem'));
+        }
+      }
+    }
+    for (var i = 0; i < imagens.length; i++) imagens[i].classList.add('joia-a-desaparecer');
+
+    return esperar(770).then(function () {
+      for (var l2 = 0; l2 < LINHAS; l2++) {
+        for (var c2 = 0; c2 < COLUNAS; c2++) {
+          if (marcadas[l2][c2]) {
+            tabuleiro[l2][c2] = null;
+            celulas[l2][c2].querySelector('.joia-imagem').classList.remove('joia-a-desaparecer');
+            atualizarCelula(l2, c2);
+          }
+        }
+      }
+      return quantidade;
+    });
+  }
+
+  async function descerJoias() {
+    for (var c = 0; c < COLUNAS; c++) {
+      for (var l = LINHAS - 1; l >= 0; l--) {
+        if (tabuleiro[l][c] === null) {
+          for (var l2 = l - 1; l2 >= 0; l2--) {
+            if (tabuleiro[l2][c] !== null) {
+              tabuleiro[l][c] = tabuleiro[l2][c];
+              tabuleiro[l2][c] = null;
+              atualizarCelula(l, c);
+              atualizarCelula(l2, c);
+              await esperar(20);
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  async function preencherVaziosSeguro() {
+    var vazias = [];
+    for (var l = 0; l < LINHAS; l++) {
+      for (var c = 0; c < COLUNAS; c++) {
+        if (tabuleiro[l][c] === null) vazias.push({ linha: l, coluna: c });
+      }
+    }
+    if (vazias.length === 0) return;
+
+    var valido = false;
+    while (!valido) {
+      for (var i = 0; i < vazias.length; i++) {
+        tabuleiro[vazias[i].linha][vazias[i].coluna] = TIPOS[Math.floor(Math.random() * TIPOS.length)];
+      }
+      if (contarMarcadas(encontrarParaEliminar(tabuleiro)) === 0) {
+        valido = true;
+      } else {
+        for (var j = 0; j < vazias.length; j++) tabuleiro[vazias[j].linha][vazias[j].coluna] = null;
+      }
+    }
+
+    for (var k = 0; k < vazias.length; k++) {
+      atualizarCelula(vazias[k].linha, vazias[k].coluna);
+      var img = celulas[vazias[k].linha][vazias[k].coluna].querySelector('.joia-imagem');
+      img.classList.add('joia-nova');
+      setTimeout((function (imagem) { return function () { imagem.classList.remove('joia-nova'); }; })(img), 500);
+      await esperar(25);
+    }
+  }
+
+  async function processarCascata() {
+    var marcadas = encontrarParaEliminar(tabuleiro);
+    var quantidade = contarMarcadas(marcadas);
+
+    if (quantidade > 0) {
+      var eliminadas = await eliminarJoias(marcadas);
+      jogadores[jogadorAtual].joias += eliminadas;
+      jogadores[jogadorAtual].pontos += 10 * (eliminadas - 2);
+      atualizarStatsDois();
+      await descerJoias();
+      await processarCascata();
+    } else {
+      await preencherVaziosSeguro();
+      if (!existeJogadaPossivel()) {
+        gerarTabuleiro();
+        desenharTabuleiro();
+      }
+      jogoAtivo = !jogoConcluido;
+    }
+  }
+
+  async function aoClicarCelula(evento) {
+    if (!jogoAtivo) return;
+    var celula = evento.currentTarget;
+    var l = parseInt(celula.dataset.linha);
+    var c = parseInt(celula.dataset.coluna);
+
+    if (primeiraJoia === null) {
+      primeiraJoia = { linha: l, coluna: c };
+      celula.classList.add('joia-selecionada');
+    } else if (primeiraJoia.linha === l && primeiraJoia.coluna === c) {
+      limparSelecao();
+    } else if (saoAdjacentes(primeiraJoia.linha, primeiraJoia.coluna, l, c)) {
+      var l1 = primeiraJoia.linha;
+      var c1 = primeiraJoia.coluna;
+      if (trocaCriaEliminacao(l1, c1, l, c)) {
+        limparSelecao();
+        jogoAtivo = false;
+        await animarTroca(l1, c1, l, c);
+        trocarJoias(l1, c1, l, c);
+        atualizarCelula(l1, c1);
+        atualizarCelula(l, c);
+        await processarCascata();
+      } else {
+        limparSelecao();
+        mostrarAviso('Uma troca de joias só é permitida se fizer com que três ou mais joias iguais fiquem alinhadas na horizontal ou na vertical');
+      }
+    } else {
+      limparSelecao();
+      primeiraJoia = { linha: l, coluna: c };
+      celula.classList.add('joia-selecionada');
+    }
+  }
+
+  function mostrarPopupSimples(mensagem, aoFechar) {
+    var fundo = document.createElement('div');
+    fundo.className = 'popup-terminar-fundo';
+    fundo.innerHTML = '<div class="popup-terminar-caixa"><p>' + mensagem + '</p>' +
+      '<button type="button" id="popup-ok-dois" class="popup-botao-sim">Ok</button></div>';
+    document.body.appendChild(fundo);
+    document.getElementById('popup-ok-dois').addEventListener('click', function () {
+      document.body.removeChild(fundo);
+      if (aoFechar) aoFechar();
+    });
+  }
+
+  function mudarJogador() {
+    jogoAtivo = false;
+    limparSelecao();
+    jogadorAtual = jogadorAtual === 0 ? 1 : 0;
+    atualizarStatsDois();
+    mostrarPopupSimples('Agora é a vez do outro jogador', function () {
+      jogoAtivo = true;
+      iniciarTimerDois();
+    });
+  }
+
+  function concluirJogoDois() {
+    jogoConcluido = true;
+    jogoAtivo = false;
+    if (timerIntervalo) clearInterval(timerIntervalo);
+    mostrarPopupSimples('Jogo Concluido, clique no botão vermelho Terminar Jogo', function () {});
+  }
+
+  function iniciarTimerDois() {
+    if (timerIntervalo) clearInterval(timerIntervalo);
+    timerIntervalo = setInterval(function () {
+      jogadores[jogadorAtual].tempo++;
+      atualizarStatsDois();
+
+      if (jogadores[jogadorAtual].tempo % 10 === 0) {
+        clearInterval(timerIntervalo);
+        turnosFeitos[jogadorAtual]++;
+        if (turnosFeitos[0] >= 3 && turnosFeitos[1] >= 3) {
+          concluirJogoDois();
+        } else {
+          mudarJogador();
+        }
+      }
+    }, 1000);
+  }
+
+  function atualizarDadosDosDoisJogadores() {
+    var utilizadores = carregarUtilizadores();
+    for (var j = 0; j < jogadores.length; j++) {
+      for (var i = 0; i < utilizadores.length; i++) {
+        if (utilizadores[i].email === jogadores[j].email) {
+          utilizadores[i].jogos2 = (utilizadores[i].jogos2 || 0) + 1;
+          utilizadores[i].tempo = utilizadores[i].tempo + jogadores[j].tempo;
+          utilizadores[i].pontos = utilizadores[i].pontos + jogadores[j].pontos;
+        }
+      }
+    }
+    guardarUtilizadores(utilizadores);
+  }
+
+  function criarPopupTerminarDois() {
+    var botao = document.getElementById('btn-terminar-jogo-dois');
+    if (!botao) return;
+    botao.addEventListener('click', function () {
+      jogoAtivo = false;
+      if (timerIntervalo) clearInterval(timerIntervalo);
+      var fundo = document.createElement('div');
+      fundo.className = 'popup-terminar-fundo';
+      fundo.innerHTML = '<div class="popup-terminar-caixa">' +
+        '<p>Tem a certeza que deseja terminar o jogo?</p>' +
+        '<div class="popup-terminar-botoes">' +
+        '<button type="button" id="popup-sim-dois" class="popup-botao-sim">Sim</button>' +
+        '<button type="button" id="popup-nao-dois" class="popup-botao-nao">Não</button>' +
+        '</div></div>';
+      document.body.appendChild(fundo);
+
+      document.getElementById('popup-nao-dois').addEventListener('click', function () {
+        document.body.removeChild(fundo);
+        if (!jogoConcluido) {
+          jogoAtivo = true;
+          iniciarTimerDois();
+        }
+      });
+
+      document.getElementById('popup-sim-dois').addEventListener('click', function () {
+        if (jogoJaTerminou) return;
+        jogoJaTerminou = true;
+        atualizarDadosDosDoisJogadores();
+        window.location.href = 'jogo-terminado.html';
+      });
+    });
+  }
+
+  function iniciarJogoDois() {
+    gerarTabuleiro();
+    desenharTabuleiro();
+    atualizarStatsDois();
+    criarPopupTerminarDois();
+    jogoAtivo = true;
+    iniciarTimerDois();
+  }
+
+  iniciarJogoDois();
 })();
 
 /* ==================== TABULEIRO ==================== */

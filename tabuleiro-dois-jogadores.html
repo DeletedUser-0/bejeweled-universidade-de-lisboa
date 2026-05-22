@@ -1,0 +1,50 @@
+<!--
+ITW 25/26 Grupo 50
+
+David Coelho 65929 - PL 23
+Miguel Horta 62208 - PL 23
+Rodrigo Duarte 60354 - PL 23
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bejeweled - Dois Jogadores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="CSS/styles.css" rel="stylesheet">
+</head>
+<body class="pagina-tabuleiro pagina-tabuleiro-dois">
+    <audio class="bg-music" src="Media/music.mp3"></audio>
+    <button type="button" class="music-toggle">
+        <img class="music-toggle__icon" src="Media/mute.png" alt="">
+    </button>
+    <button type="button" id="btn-terminar-jogo-dois" class="botao-terminar-jogo">Terminar Jogo</button>
+
+    <div class="jogo-container jogo-container-dois">
+        <div class="stats-bloco stats-bloco-dois">
+            <div class="jogador-dois-caixa jogador-ativo" id="caixa-jogador1">
+                <h2 id="nome-jogador1">Jogador 1</h2>
+                <div id="pontos-jogador1">Pontuação: 0</div>
+                <div id="tempo-jogador1">Tempo decorrido: 00:00</div>
+                <div id="joias-jogador1">Número de joias eliminadas: 0</div>
+            </div>
+
+            <div class="jogador-dois-caixa" id="caixa-jogador2">
+                <h2 id="nome-jogador2">Jogador 2</h2>
+                <div id="pontos-jogador2">Pontuação: 0</div>
+                <div id="tempo-jogador2">Tempo decorrido: 00:00</div>
+                <div id="joias-jogador2">Número de joias eliminadas: 0</div>
+            </div>
+        </div>
+
+        <div class="tabuleiro-wrapper">
+            <div class="tabuleiro-grid-dois"></div>
+        </div>
+    </div>
+
+    <script src="JavaScript/scripts.js"></script>
+</body>
+</html>

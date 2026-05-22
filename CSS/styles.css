@@ -1001,3 +1001,105 @@ input {
   outline-offset: -4px;
   box-shadow: 0 0 14px #ffd400;
 }
+
+/* === LOGIN DOIS JOGADORES === */
+.pagina-login-dois form {
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.espaco-login-dois {
+  height: 25px;
+}
+
+.texto-registar-dois {
+  font-size: 24px;
+  margin-top: 28px;
+  text-align: center;
+}
+
+.texto-registar-dois a {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+/* === TABULEIRO DOIS JOGADORES === */
+.jogo-container-dois {
+  align-items: flex-start;
+}
+
+.stats-bloco-dois {
+  color: white;
+  min-width: 280px;
+}
+
+.jogador-dois-caixa {
+  font-size: 24px;
+  margin-bottom: 28px;
+  padding: 12px;
+  border: 3px solid transparent;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.jogador-dois-caixa h2 {
+  font-size: 32px;
+  margin: 0 0 10px;
+}
+
+.jogador-ativo {
+  border-color: #ffc107;
+  box-shadow: 0 0 12px #ffc107;
+}
+
+.tabuleiro-grid-dois {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  max-width: 90vmin;
+  width: 720px;
+  margin: 0 auto;
+}
+
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+1),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+3),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+5),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+7),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+9),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+12),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+14),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+16),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+18),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+20) {
+  background-color: #222;
+}
+
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+2),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+4),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+6),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+8),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+10),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+11),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+13),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+15),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+17),
+.tabuleiro-grid-dois .celula-tabuleiro:nth-child(20n+19) {
+  background-color: #555;
+}
+
+@media (max-width: 900px) {
+  .jogo-container-dois {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stats-bloco-dois {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .tabuleiro-grid-dois {
+    width: 92vmin;
+  }
+}

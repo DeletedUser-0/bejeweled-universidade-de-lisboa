@@ -1,0 +1,54 @@
+<!--
+ITW 25/26 Grupo 50
+
+David Coelho 65929 - PL 23
+Miguel Horta 62208 - PL 23
+Rodrigo Duarte 60354 - PL 23
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bejeweled - Dois Jogadores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/styles.css">
+</head>
+<body>
+    <a class="nav-back" href="menu.html"><img src="Media/seta_tras.png" alt="Voltar"></a>
+    <audio class="bg-music" src="Media/music.mp3"></audio>
+    <button type="button" class="music-toggle">
+        <img class="music-toggle__icon" src="Media/mute.png" alt="">
+    </button>
+
+    <div class="index-container pagina-login-dois">
+        <img src="Media/logo.png" alt="Logo Bejeweled" class="logo-login">
+
+        <form id="form-login-dois">
+            <label for="email-jogador1">Email do Jogador 1:</label>
+            <input type="email" id="email-jogador1" name="email-jogador1">
+
+            <label for="password-jogador1">Palavra-passe do Jogador 1:</label>
+            <input type="password" id="password-jogador1" name="password-jogador1">
+
+            <div class="espaco-login-dois"></div>
+
+            <label for="email-jogador2">Email do Jogador 2:</label>
+            <input type="email" id="email-jogador2" name="email-jogador2">
+
+            <label for="password-jogador2">Palavra-passe do Jogador 2:</label>
+            <input type="password" id="password-jogador2" name="password-jogador2">
+        </form>
+
+        <div class="login-actions">
+            <button type="button" id="btn-login-dois" class="botao-login">Jogar</button>
+        </div>
+
+        <p class="texto-registar-dois">Precisa de registar um utilizador? <a href="registo.html">Clique aqui</a></p>
+    </div>
+
+    <script src="JavaScript/scripts.js"></script>
+</body>
+</html>

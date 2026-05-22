@@ -7,6 +7,7 @@ Rodrigo Duarte 60354 - PL 23
 */
 
 /* ==================== MUSICA ==================== */
+// Liga e desliga a música quando o utilizador carrega no botão do som.
 (function () {
   var audio = document.querySelector('.bg-music');
   var btn = document.querySelector('.music-toggle');
@@ -28,6 +29,7 @@ Rodrigo Duarte 60354 - PL 23
   });
 })();
 
+// Controla o volume da música e guarda o valor escolhido no localStorage.
 (function () {
   var audio = document.querySelector('.bg-music');
   var slider = document.getElementById('volume-slider');
@@ -53,6 +55,7 @@ var CHAVE_UTILIZADORES = 'bejeweledUtilizadores';
 var CHAVE_UTILIZADOR_ATUAL = 'bejeweledUtilizadorAtual';
 var CHAVE_UTILIZADOR_ATUAL_2 = 'bejeweledUtilizadorAtual2';
 
+// Cria os utilizadores que já existem no jogo quando ainda não há dados guardados.
 function utilizadoresPredefinidos() {
   return [
     { email: 'pedro@bejeweled.local', password: '1234', avatar: 'a.png', nome: 'pedro', jogos: 31, jogos2: 0, tempo: 3303, pontos: 15100 },
@@ -61,10 +64,12 @@ function utilizadoresPredefinidos() {
   ];
 }
 
+// Retira a parte do email que aparece antes do @ para usar como nome do jogador.
 function obterNomeDoEmail(email) {
   return email.split('@')[0];
 }
 
+// Vai buscar os utilizadores ao localStorage e prepara a lista para evitar dados repetidos.
 function carregarUtilizadores() {
   var dados = localStorage.getItem(CHAVE_UTILIZADORES);
   var utilizadores;
@@ -145,10 +150,12 @@ function carregarUtilizadores() {
   guardarUtilizadores(limpos);
   return limpos;
 }
+// Guarda a lista atualizada de utilizadores no localStorage.
 function guardarUtilizadores(utilizadores) {
   localStorage.setItem(CHAVE_UTILIZADORES, JSON.stringify(utilizadores));
 }
 
+// Procura um utilizador através do email escrito no login ou no registo.
 function procurarUtilizadorPorEmail(email) {
   var utilizadores = carregarUtilizadores();
   email = email.toLowerCase();
@@ -158,6 +165,7 @@ function procurarUtilizadorPorEmail(email) {
   return null;
 }
 
+// Verifica se o email tem um formato básico válido.
 function emailValido(email) {
   email = email.toLowerCase().trim();
   var partes = email.split('@');
@@ -168,6 +176,7 @@ function emailValido(email) {
   return true;
 }
 
+// Mostra uma mensagem de erro vermelha ao lado do campo indicado durante poucos segundos.
 function mostrarErro(elemento, texto) {
   if (!elemento) return;
 
@@ -193,6 +202,7 @@ function mostrarErro(elemento, texto) {
   }, 3000);
 }
 
+// Mostra uma mensagem de erro quando o utilizador não escolhe avatar no registo.
 function mostrarErroAvatar(texto) {
   var caixa = document.querySelector('.avatar-container');
   if (!caixa) return;
@@ -212,6 +222,7 @@ function mostrarErroAvatar(texto) {
 }
 
 /* ==================== REGISTO ==================== */
+// Trata do formulário de registo, valida os dados e cria um novo utilizador.
 (function () {
   var botao = document.getElementById('btn-registo');
   if (!botao) return;
@@ -308,6 +319,7 @@ function mostrarErroAvatar(texto) {
 })();
 
 /* ==================== LOGIN ==================== */
+// Trata do login normal de um jogador.
 (function () {
   var botao = document.getElementById('btn-login');
   if (!botao) return;
@@ -342,6 +354,7 @@ function mostrarErroAvatar(texto) {
 
 
 /* ==================== LOGIN DOIS JOGADORES ==================== */
+// Valida o login dos dois jogadores antes de entrar no modo de dois jogadores.
 (function () {
   var botao = document.getElementById('btn-login-dois');
   if (!botao) return;
@@ -394,16 +407,19 @@ function mostrarErroAvatar(texto) {
 })();
 
 /* ==================== TABELAS DE ESTATISTICAS ==================== */
+// Converte segundos para o formato usado nas tabelas de estatísticas.
 function formatarTempoTabela(segundos) {
   var minutos = Math.floor(segundos / 60);
   var seg = segundos % 60;
   return minutos + ' min ' + (seg < 10 ? '0' : '') + seg + ' s';
 }
 
+// Coloca espaços nos pontos para serem mais fáceis de ler.
 function formatarPontos(pontos) {
   return String(pontos).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
+// Ordena os utilizadores por pontuação, tempo e nome, mostrando apenas os dez melhores.
 function utilizadoresOrdenados() {
   var utilizadores = carregarUtilizadores();
   utilizadores.sort(function (a, b) {
@@ -435,6 +451,7 @@ function utilizadoresOrdenados() {
 
 
 /* ==================== TABULEIRO DOIS JOGADORES ==================== */
+// Código responsável pelo modo de jogo com dois jogadores.
 (function () {
   var grid = document.querySelector('.tabuleiro-grid-dois');
   if (!grid) return;
@@ -464,12 +481,14 @@ function utilizadoresOrdenados() {
   if (u1) jogadores[0].nome = u1.nome;
   if (u2) jogadores[1].nome = u2.nome;
 
+  // Converte segundos para minutos e segundos no formato 00:00.
   function formatarTempo(seg) {
     var m = Math.floor(seg / 60);
     var s = seg % 60;
     return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
   }
 
+  // Atualiza no ecrã os pontos, o tempo e as joias eliminadas dos dois jogadores.
   function atualizarStatsDois() {
     document.getElementById('nome-jogador1').textContent = 'Jogador ' + jogadores[0].nome;
     document.getElementById('pontos-jogador1').textContent = 'Pontuação: ' + jogadores[0].pontos;
@@ -485,10 +504,12 @@ function utilizadoresOrdenados() {
     document.getElementById('caixa-jogador2').classList.toggle('jogador-ativo', jogadorAtual === 1);
   }
 
+  // Pequena função auxiliar para fazer pausas nas animações.
   function esperar(ms) {
     return new Promise(function (resolve) { setTimeout(resolve, ms); });
   }
 
+  // Gera um tabuleiro novo sem eliminações automáticas e com jogadas possíveis.
   function gerarTabuleiro() {
     var valido = false;
     while (!valido) {
@@ -503,6 +524,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Verifica se já existem três ou mais joias iguais seguidas.
   function temTresEmLinha(tab) {
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c <= COLUNAS - 3; c++) {
@@ -517,6 +539,7 @@ function utilizadoresOrdenados() {
     return false;
   }
 
+  // Marca todas as joias que devem ser eliminadas por estarem alinhadas.
   function encontrarParaEliminar(tab) {
     var marcadas = [];
     var l, c;
@@ -549,6 +572,7 @@ function utilizadoresOrdenados() {
     return marcadas;
   }
 
+  // Conta quantas joias foram marcadas para eliminação.
   function contarMarcadas(marcadas) {
     var total = 0;
     for (var l = 0; l < LINHAS; l++) {
@@ -559,6 +583,7 @@ function utilizadoresOrdenados() {
     return total;
   }
 
+  // Cria as células e as imagens das joias no HTML.
   function desenharTabuleiro() {
     grid.innerHTML = '';
     celulas = [];
@@ -583,6 +608,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Atualiza a imagem de uma célula quando a joia muda.
   function atualizarCelula(l, c) {
     var img = celulas[l][c].querySelector('.joia-imagem');
     if (tabuleiro[l][c] !== null) {
@@ -594,23 +620,27 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Remove a seleção visual da joia escolhida.
   function limparSelecao() {
     if (primeiraJoia) celulas[primeiraJoia.linha][primeiraJoia.coluna].classList.remove('joia-selecionada');
     primeiraJoia = null;
   }
 
+  // Confirma se duas joias estão lado a lado.
   function saoAdjacentes(l1, c1, l2, c2) {
     var dl = Math.abs(l1 - l2);
     var dc = Math.abs(c1 - c2);
     return (dl === 1 && dc === 0) || (dl === 0 && dc === 1);
   }
 
+  // Troca duas joias dentro do array do tabuleiro.
   function trocarJoias(l1, c1, l2, c2) {
     var temp = tabuleiro[l1][c1];
     tabuleiro[l1][c1] = tabuleiro[l2][c2];
     tabuleiro[l2][c2] = temp;
   }
 
+  // Testa se uma troca vai criar uma eliminação válida.
   function trocaCriaEliminacao(l1, c1, l2, c2) {
     trocarJoias(l1, c1, l2, c2);
     var marcadas = encontrarParaEliminar(tabuleiro);
@@ -619,6 +649,7 @@ function utilizadoresOrdenados() {
     return tem;
   }
 
+  // Procura se ainda existe pelo menos uma jogada possível no tabuleiro.
   function existeJogadaPossivel() {
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c < COLUNAS; c++) {
@@ -630,6 +661,7 @@ function utilizadoresOrdenados() {
     return false;
   }
 
+  // Faz a animação visual de duas joias a trocar de lugar.
   function animarTroca(l1, c1, l2, c2) {
     var img1 = celulas[l1][c1].querySelector('.joia-imagem');
     var img2 = celulas[l2][c2].querySelector('.joia-imagem');
@@ -653,6 +685,7 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Faz as joias marcadas desaparecerem e depois remove-as do tabuleiro.
   function eliminarJoias(marcadas) {
     var quantidade = 0;
     var imagens = [];
@@ -680,6 +713,7 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Faz as joias cair para ocupar os espaços vazios.
   async function descerJoias() {
     for (var c = 0; c < COLUNAS; c++) {
       for (var l = LINHAS - 1; l >= 0; l--) {
@@ -699,6 +733,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Preenche os espaços vazios com novas joias, evitando eliminações imediatas.
   async function preencherVaziosSeguro() {
     var vazias = [];
     for (var l = 0; l < LINHAS; l++) {
@@ -729,6 +764,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Trata das eliminações, descidas e novas eliminações em sequência.
   async function processarCascata() {
     var marcadas = encontrarParaEliminar(tabuleiro);
     var quantidade = contarMarcadas(marcadas);
@@ -750,6 +786,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Controla o clique do utilizador nas joias do tabuleiro.
   async function aoClicarCelula(evento) {
     if (!jogoAtivo) return;
     var celula = evento.currentTarget;
@@ -783,6 +820,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Mostra um popup simples com uma mensagem e botão Ok.
   function mostrarPopupSimples(mensagem, aoFechar) {
     var fundo = document.createElement('div');
     fundo.className = 'popup-terminar-fundo';
@@ -795,6 +833,7 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Troca a vez entre o jogador 1 e o jogador 2.
   function mudarJogador() {
     jogoAtivo = false;
     limparSelecao();
@@ -806,6 +845,7 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Termina o modo de dois jogadores quando ambos acabam os turnos.
   function concluirJogoDois() {
     jogoConcluido = true;
     jogoAtivo = false;
@@ -813,13 +853,14 @@ function utilizadoresOrdenados() {
     mostrarPopupSimples('Jogo Concluido, clique no botão vermelho Terminar Jogo', function () {});
   }
 
+  // Conta o tempo de cada jogador e muda a vez a cada 10 segundos.
   function iniciarTimerDois() {
     if (timerIntervalo) clearInterval(timerIntervalo);
     timerIntervalo = setInterval(function () {
       jogadores[jogadorAtual].tempo++;
       atualizarStatsDois();
 
-      if (jogadores[jogadorAtual].tempo % 15 === 0) {
+      if (jogadores[jogadorAtual].tempo % 10 === 0) {
         clearInterval(timerIntervalo);
         turnosFeitos[jogadorAtual]++;
         if (turnosFeitos[0] >= 3 && turnosFeitos[1] >= 3) {
@@ -831,6 +872,7 @@ function utilizadoresOrdenados() {
     }, 1000);
   }
 
+  // Soma os dados finais dos dois jogadores aos dados guardados.
   function atualizarDadosDosDoisJogadores() {
     var utilizadores = carregarUtilizadores();
     for (var j = 0; j < jogadores.length; j++) {
@@ -845,6 +887,7 @@ function utilizadoresOrdenados() {
     guardarUtilizadores(utilizadores);
   }
 
+  // Cria o popup de confirmação para terminar o jogo de dois jogadores.
   function criarPopupTerminarDois() {
     var botao = document.getElementById('btn-terminar-jogo-dois');
     if (!botao) return;
@@ -878,6 +921,7 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Começa o jogo de dois jogadores.
   function iniciarJogoDois() {
     gerarTabuleiro();
     desenharTabuleiro();
@@ -891,6 +935,7 @@ function utilizadoresOrdenados() {
 })();
 
 /* ==================== TABULEIRO ==================== */
+// Código responsável pelo modo SinglePlayer.
 (function () {
   var grid = document.querySelector('.tabuleiro-grid');
   if (!grid) return;
@@ -919,18 +964,21 @@ function utilizadoresOrdenados() {
 
   var statsItems = document.querySelectorAll('.stats-item');
 
+  // Atualiza no ecrã a pontuação, joias eliminadas e joias que faltam.
   function atualizarStats() {
     if (statsItems[0]) statsItems[0].textContent = 'Pontuação: ' + pontuacao;
     if (statsItems[2]) statsItems[2].textContent = 'Número de joias eliminadas: ' + joiasEliminadas;
     if (statsItems[3]) statsItems[3].textContent = 'Número de joias que faltam eliminar: ' + joiasFaltam;
   }
 
+  // Converte segundos para minutos e segundos no formato 00:00.
   function formatarTempo(seg) {
     var m = Math.floor(seg / 60);
     var s = seg % 60;
     return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
   }
 
+  // Começa o contador de tempo do jogo SinglePlayer.
   function iniciarTimer() {
     if (timerIntervalo) clearInterval(timerIntervalo);
     timerIntervalo = setInterval(function () {
@@ -939,6 +987,7 @@ function utilizadoresOrdenados() {
     }, 1000);
   }
 
+  // Soma os resultados do jogo atual aos dados guardados do jogador.
   function atualizarDadosDoUtilizador() {
     var emailAtual = localStorage.getItem(CHAVE_UTILIZADOR_ATUAL);
     if (!emailAtual) return;
@@ -954,6 +1003,7 @@ function utilizadoresOrdenados() {
     guardarUtilizadores(utilizadores);
   }
 
+  // Termina o jogo, guarda os dados e envia o jogador para a página final.
   function finalizarJogo() {
     if (jogoJaTerminou) return;
     jogoJaTerminou = true;
@@ -963,6 +1013,7 @@ function utilizadoresOrdenados() {
     window.location.href = 'jogo-terminado.html';
   }
 
+  // Gera um tabuleiro novo sem eliminações automáticas e com jogadas possíveis.
   function gerarTabuleiro() {
     var valido = false;
     while (!valido) {
@@ -980,6 +1031,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Verifica se já existem três ou mais joias iguais seguidas.
   function temTresEmLinha(tab) {
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c <= COLUNAS - 3; c++) {
@@ -994,6 +1046,7 @@ function utilizadoresOrdenados() {
     return false;
   }
 
+  // Marca todas as joias que devem ser eliminadas por estarem alinhadas.
   function encontrarParaEliminar(tab) {
     var marcadas = [];
     var l, c;
@@ -1027,6 +1080,7 @@ function utilizadoresOrdenados() {
     return marcadas;
   }
 
+  // Conta quantas joias foram marcadas para eliminação.
   function contarMarcadas(marcadas) {
     var total = 0;
     for (var l = 0; l < LINHAS; l++) {
@@ -1037,6 +1091,7 @@ function utilizadoresOrdenados() {
     return total;
   }
 
+  // Cria as células e as imagens das joias no HTML.
   function desenharTabuleiro() {
     grid.innerHTML = '';
     celulas = [];
@@ -1061,6 +1116,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Atualiza a imagem de uma célula quando a joia muda.
   function atualizarCelula(l, c) {
     var celula = celulas[l][c];
     if (!celula) return;
@@ -1075,11 +1131,13 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Remove a seleção visual da joia escolhida.
   function limparSelecao() {
     if (primeiraJoia) celulas[primeiraJoia.linha][primeiraJoia.coluna].classList.remove('joia-selecionada');
     primeiraJoia = null;
   }
 
+  // Mostra avisos pequenos, por exemplo quando uma troca não é válida.
   function mostrarAviso(msg) {
     var popup = document.getElementById('popup-aviso');
     if (!popup) {
@@ -1094,18 +1152,21 @@ function utilizadoresOrdenados() {
     }, 3000);
   }
 
+  // Confirma se duas joias estão lado a lado.
   function saoAdjacentes(l1, c1, l2, c2) {
     var difLinha = Math.abs(l1 - l2);
     var difColuna = Math.abs(c1 - c2);
     return (difLinha === 1 && difColuna === 0) || (difLinha === 0 && difColuna === 1);
   }
 
+  // Troca duas joias dentro do array do tabuleiro.
   function trocarJoias(l1, c1, l2, c2) {
     var temp = tabuleiro[l1][c1];
     tabuleiro[l1][c1] = tabuleiro[l2][c2];
     tabuleiro[l2][c2] = temp;
   }
 
+  // Testa se uma troca vai criar uma eliminação válida.
   function trocaCriaEliminacao(l1, c1, l2, c2) {
     trocarJoias(l1, c1, l2, c2);
     var marcadas = encontrarParaEliminar(tabuleiro);
@@ -1114,6 +1175,7 @@ function utilizadoresOrdenados() {
     return temElim;
   }
 
+  // Procura duas joias que possam ser trocadas para formar uma eliminação.
   function procurarJogadaPossivel() {
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c < COLUNAS; c++) {
@@ -1136,10 +1198,12 @@ function utilizadoresOrdenados() {
     return null;
   }
 
+  // Procura se ainda existe pelo menos uma jogada possível no tabuleiro.
   function existeJogadaPossivel() {
     return procurarJogadaPossivel() !== null;
   }
 
+  // Remove a fronteira amarela das joias sinalizadas pela dica.
   function limparDica() {
     for (var i = 0; i < joiasComDica.length; i++) {
       var pos = joiasComDica[i];
@@ -1150,6 +1214,7 @@ function utilizadoresOrdenados() {
     joiasComDica = [];
   }
 
+  // Prepara o botão Dica e sinaliza uma jogada possível quando é clicado.
   function criarBotaoDica() {
     var botaoDica = document.getElementById('btn-dica');
     if (!botaoDica) return;
@@ -1180,6 +1245,7 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Depois das jogadas, verifica se o tabuleiro ainda permite alguma troca.
   async function verificarSeHaJogadasPossiveis() {
     if (jogoJaTerminou) return;
 
@@ -1198,6 +1264,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Mostra o popup que permite baralhar o tabuleiro quando não há jogadas.
   function mostrarPopupBaralhar() {
     if (popupBaralharAberto) return;
     popupBaralharAberto = true;
@@ -1228,12 +1295,14 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Pequena função auxiliar para fazer pausas nas animações.
   function esperar(ms) {
     return new Promise(function (resolve) {
       setTimeout(resolve, ms);
     });
   }
 
+  // Faz a animação visual de duas joias a trocar de lugar.
   function animarTroca(l1, c1, l2, c2) {
     var img1 = celulas[l1][c1].querySelector('.joia-imagem');
     var img2 = celulas[l2][c2].querySelector('.joia-imagem');
@@ -1260,6 +1329,7 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Faz as joias marcadas desaparecerem e depois remove-as do tabuleiro.
   function eliminarJoias(marcadas) {
     var quantidade = 0;
     var imagens = [];
@@ -1293,8 +1363,9 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Faz as joias cair para ocupar os espaços vazios.
   async function descerJoias() {
-    // Simple falling animation: for each column, move images down visually using clones
+    // Faz as joias descerem visualmente para ocupar os espaços vazios.
     var animacoes = [];
 
     for (var c = 0; c < COLUNAS; c++) {
@@ -1302,23 +1373,23 @@ function utilizadoresOrdenados() {
         if (tabuleiro[l][c] === null) {
           for (var l2 = l - 1; l2 >= 0; l2--) {
             if (tabuleiro[l2][c] !== null) {
-              // move model
+              // Atualiza primeiro a informação guardada no array do tabuleiro.
               tabuleiro[l][c] = tabuleiro[l2][c];
               tabuleiro[l2][c] = null;
 
-              // animate DOM: create a clone of the image and translate it from source to dest
+              // Cria uma cópia da imagem para simular a queda da joia no ecrã.
               (function (srcL, srcC, dstL, dstC) {
                 var srcCell = celulas[srcL][srcC];
                 var dstCell = celulas[dstL][dstC];
                 var srcImg = srcCell && srcCell.querySelector('.joia-imagem');
                 if (!srcImg || !dstCell) return;
 
-                // ensure destination updated (hidden until animation ends)
+                // Atualiza a célula de destino antes de começar a animação.
                 atualizarCelula(dstL, dstC);
 
                 var clone = srcImg.cloneNode(true);
                 clone.classList.add('joia-caindo');
-                // position the clone absolutely over the source image
+                // Coloca a cópia por cima da imagem original.
                 var rSrc = srcImg.getBoundingClientRect();
                 clone.style.position = 'fixed';
                 clone.style.left = rSrc.left + 'px';
@@ -1331,7 +1402,7 @@ function utilizadoresOrdenados() {
                 document.body.appendChild(clone);
 
                 var p = new Promise(function (resolve) {
-                  // force reflow
+                  // Força o navegador a aplicar os estilos antes da animação.
                   void clone.offsetWidth;
                   var rDst = dstCell.getBoundingClientRect();
                   var dx = rDst.left - rSrc.left;
@@ -1339,7 +1410,7 @@ function utilizadoresOrdenados() {
                   clone.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
 
                   setTimeout(function () {
-                    // remove clone and reveal destination image
+                    // Remove a cópia e deixa visível a imagem final.
                     if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
                     atualizarCelula(dstL, dstC);
                     resolve();
@@ -1356,10 +1427,11 @@ function utilizadoresOrdenados() {
       }
     }
 
-    // wait for all animations to complete
+    // Espera que todas as animações acabem antes de continuar o jogo.
     if (animacoes.length > 0) await Promise.all(animacoes);
   }
 
+  // Trata das eliminações, descidas e novas eliminações em sequência.
   async function processarCascata() {
     var marcadas = encontrarParaEliminar(tabuleiro);
     var quantidade = contarMarcadas(marcadas);
@@ -1384,6 +1456,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Preenche os espaços vazios com novas joias, evitando eliminações imediatas.
   async function preencherVaziosSeguro() {
     var posicoesvazias = [];
     for (var l = 0; l < LINHAS; l++) {
@@ -1442,6 +1515,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Controla o clique do utilizador nas joias do tabuleiro.
   async function aoClicarCelula(evento) {
     if (!jogoAtivo) return;
 
@@ -1480,6 +1554,7 @@ function utilizadoresOrdenados() {
     }
   }
 
+  // Cria o popup de confirmação do botão Terminar Jogo.
   function criarPopupTerminarJogo() {
     var botaoTerminar = document.getElementById('btn-terminar-jogo');
     if (!botaoTerminar) return;
@@ -1507,6 +1582,7 @@ function utilizadoresOrdenados() {
     });
   }
 
+  // Prepara o tabuleiro, os dados do ecrã e começa o jogo SinglePlayer.
   function iniciarJogo() {
     gerarTabuleiro();
     desenharTabuleiro();

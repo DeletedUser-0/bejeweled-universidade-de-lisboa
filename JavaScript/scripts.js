@@ -819,7 +819,7 @@ function utilizadoresOrdenados() {
       jogadores[jogadorAtual].tempo++;
       atualizarStatsDois();
 
-      if (jogadores[jogadorAtual].tempo % 10 === 0) {
+      if (jogadores[jogadorAtual].tempo % 15 === 0) {
         clearInterval(timerIntervalo);
         turnosFeitos[jogadorAtual]++;
         if (turnosFeitos[0] >= 3 && turnosFeitos[1] >= 3) {

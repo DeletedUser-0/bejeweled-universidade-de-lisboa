@@ -393,6 +393,11 @@ function utilizadoresOrdenados() {
   var timerSegundos = 0;
   var timerIntervalo = null;
   var jogoJaTerminou = false;
+  var popupBaralharAberto = false;
+
+  /* Se esta variável estiver a true, aparecem joias novas depois das eliminações.
+     Se estiver a false, as joias vazias não são preenchidas e o jogo pode ficar sem jogadas. */
+  var gerarNovasJoias = true;
 
   var statsItems = document.querySelectorAll('.stats-item');
 
@@ -450,7 +455,10 @@ function utilizadoresOrdenados() {
           tabuleiro[l][c] = TIPOS[Math.floor(Math.random() * TIPOS.length)];
         }
       }
-      valido = !temTresEmLinha(tabuleiro);
+
+      /* O tabuleiro não deve começar com 3 joias já alinhadas
+         e deve ter pelo menos uma jogada possível. */
+      valido = !temTresEmLinha(tabuleiro) && existeJogadaPossivel();
     }
   }
 
@@ -588,6 +596,71 @@ function utilizadoresOrdenados() {
     return temElim;
   }
 
+  function existeJogadaPossivel() {
+    for (var l = 0; l < LINHAS; l++) {
+      for (var c = 0; c < COLUNAS; c++) {
+        if (tabuleiro[l][c] === null) continue;
+
+        if (c + 1 < COLUNAS && tabuleiro[l][c + 1] !== null) {
+          if (trocaCriaEliminacao(l, c, l, c + 1)) return true;
+        }
+
+        if (l + 1 < LINHAS && tabuleiro[l + 1][c] !== null) {
+          if (trocaCriaEliminacao(l, c, l + 1, c)) return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  async function verificarSeHaJogadasPossiveis() {
+    if (jogoJaTerminou) return;
+
+    if (existeJogadaPossivel()) {
+      jogoAtivo = true;
+      return;
+    }
+
+    jogoAtivo = false;
+    await esperar(3000);
+
+    if (!jogoJaTerminou && !existeJogadaPossivel()) {
+      mostrarPopupBaralhar();
+    } else if (!jogoJaTerminou) {
+      jogoAtivo = true;
+    }
+  }
+
+  function mostrarPopupBaralhar() {
+    if (popupBaralharAberto) return;
+    popupBaralharAberto = true;
+
+    var fundo = document.createElement('div');
+    fundo.className = 'popup-baralhar-fundo';
+    fundo.innerHTML =
+      '<div class="popup-baralhar-caixa">' +
+      '<p>Atualmente não dá para fazer uma troca de joias, clique no botão abaixo para baralhar as joias do tabuleiro</p>' +
+      '<button type="button" id="btn-baralhar-joias" class="popup-botao-baralhar">Baralhar joias</button>' +
+      '</div>';
+
+    document.body.appendChild(fundo);
+
+    document.getElementById('btn-baralhar-joias').addEventListener('click', function () {
+      if (fundo.parentNode) document.body.removeChild(fundo);
+      popupBaralharAberto = false;
+
+      pontuacao = Math.max(0, pontuacao - 10);
+      primeiraJoia = null;
+
+      gerarTabuleiro();
+      desenharTabuleiro();
+      atualizarStats();
+
+      jogoAtivo = true;
+    });
+  }
+
   function esperar(ms) {
     return new Promise(function (resolve) {
       setTimeout(resolve, ms);
@@ -612,7 +685,7 @@ function utilizadoresOrdenados() {
       img2.style.transform = 'translate(' + (-dx) + 'px, ' + (-dy) + 'px)';
     }, 20);
 
-    return esperar(650).then(function () {
+    return esperar(227).then(function () {
       img1.classList.remove('joia-a-trocar');
       img2.classList.remove('joia-a-trocar');
       img1.style.transform = '';
@@ -638,7 +711,7 @@ function utilizadoresOrdenados() {
       imagens[i].classList.add('joia-a-desaparecer');
     }
 
-    return esperar(2200).then(function () {
+    return esperar(770).then(function () {
       for (var l2 = 0; l2 < LINHAS; l2++) {
         for (var c2 = 0; c2 < COLUNAS; c2++) {
           if (marcadas[l2][c2]) {
@@ -736,11 +809,11 @@ function utilizadoresOrdenados() {
         return;
       }
 
-      descerJoias();
+      await descerJoias();
       await processarCascata();
     } else {
       await preencherVaziosSeguro();
-      jogoAtivo = true;
+      await verificarSeHaJogadasPossiveis();
     }
   }
 
@@ -753,6 +826,15 @@ function utilizadoresOrdenados() {
     }
 
     if (posicoesvazias.length === 0) return;
+
+    /* Para testar a deteção de falta de jogadas, basta colocar
+       a variável gerarNovasJoias como false no início do código do tabuleiro. */
+    if (!gerarNovasJoias) {
+      for (var p = 0; p < posicoesvazias.length; p++) {
+        atualizarCelula(posicoesvazias[p].linha, posicoesvazias[p].coluna);
+      }
+      return;
+    }
 
     var valido = false;
     while (!valido) {
@@ -789,7 +871,7 @@ function utilizadoresOrdenados() {
           };
         })(img), 500);
       }
-      await esperar(180);
+      await esperar(63);
     }
   }
 

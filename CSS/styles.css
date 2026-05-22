@@ -977,3 +977,27 @@ input {
 .popup-botao-baralhar:hover {
   background-color: #45a049;
 }
+
+/* === BOTAO DE DICA === */
+.botao-dica {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 26px;
+  background-color: #ffc107;
+  color: #222;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: "VT323", monospace;
+}
+
+.botao-dica:hover {
+  background-color: #e0a800;
+}
+
+.joia-dica {
+  outline: 4px solid #ffd400;
+  outline-offset: -4px;
+  box-shadow: 0 0 14px #ffd400;
+}

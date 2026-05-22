@@ -394,6 +394,7 @@ function utilizadoresOrdenados() {
   var timerIntervalo = null;
   var jogoJaTerminou = false;
   var popupBaralharAberto = false;
+  var joiasComDica = [];
 
   /* Se esta variável estiver a true, aparecem joias novas depois das eliminações.
      Se estiver a false, as joias vazias não são preenchidas e o jogo pode ficar sem jogadas. */
@@ -596,22 +597,70 @@ function utilizadoresOrdenados() {
     return temElim;
   }
 
-  function existeJogadaPossivel() {
+  function procurarJogadaPossivel() {
     for (var l = 0; l < LINHAS; l++) {
       for (var c = 0; c < COLUNAS; c++) {
         if (tabuleiro[l][c] === null) continue;
 
         if (c + 1 < COLUNAS && tabuleiro[l][c + 1] !== null) {
-          if (trocaCriaEliminacao(l, c, l, c + 1)) return true;
+          if (trocaCriaEliminacao(l, c, l, c + 1)) {
+            return { l1: l, c1: c, l2: l, c2: c + 1 };
+          }
         }
 
         if (l + 1 < LINHAS && tabuleiro[l + 1][c] !== null) {
-          if (trocaCriaEliminacao(l, c, l + 1, c)) return true;
+          if (trocaCriaEliminacao(l, c, l + 1, c)) {
+            return { l1: l, c1: c, l2: l + 1, c2: c };
+          }
         }
       }
     }
 
-    return false;
+    return null;
+  }
+
+  function existeJogadaPossivel() {
+    return procurarJogadaPossivel() !== null;
+  }
+
+  function limparDica() {
+    for (var i = 0; i < joiasComDica.length; i++) {
+      var pos = joiasComDica[i];
+      if (celulas[pos.linha] && celulas[pos.linha][pos.coluna]) {
+        celulas[pos.linha][pos.coluna].classList.remove('joia-dica');
+      }
+    }
+    joiasComDica = [];
+  }
+
+  function criarBotaoDica() {
+    var botaoDica = document.getElementById('btn-dica');
+    if (!botaoDica) return;
+
+    botaoDica.addEventListener('click', function () {
+      if (!jogoAtivo) return;
+
+      if (joiasComDica.length > 0) {
+        mostrarAviso('Já tem duas joias sinalizadas. Faça uma jogada para voltar a utilizar o botão de Dica');
+        return;
+      }
+
+      var jogada = procurarJogadaPossivel();
+      if (jogada === null) {
+        verificarSeHaJogadasPossiveis();
+        return;
+      }
+
+      pontuacao = Math.max(0, pontuacao - 5);
+      atualizarStats();
+
+      celulas[jogada.l1][jogada.c1].classList.add('joia-dica');
+      celulas[jogada.l2][jogada.c2].classList.add('joia-dica');
+      joiasComDica = [
+        { linha: jogada.l1, coluna: jogada.c1 },
+        { linha: jogada.l2, coluna: jogada.c2 }
+      ];
+    });
   }
 
   async function verificarSeHaJogadasPossiveis() {
@@ -650,6 +699,7 @@ function utilizadoresOrdenados() {
       if (fundo.parentNode) document.body.removeChild(fundo);
       popupBaralharAberto = false;
 
+      limparDica();
       pontuacao = Math.max(0, pontuacao - 10);
       primeiraJoia = null;
 
@@ -894,6 +944,7 @@ function utilizadoresOrdenados() {
       var c1 = primeiraJoia.coluna;
 
       if (trocaCriaEliminacao(l1, c1, l, c)) {
+        limparDica();
         limparSelecao();
         jogoAtivo = false;
         await animarTroca(l1, c1, l, c);
@@ -946,6 +997,7 @@ function utilizadoresOrdenados() {
     if (statsItems[1]) statsItems[1].textContent = 'Tempo decorrido: ' + formatarTempo(timerSegundos);
     iniciarTimer();
     criarPopupTerminarJogo();
+    criarBotaoDica();
     jogoAtivo = true;
   }
 

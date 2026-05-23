@@ -6,12 +6,18 @@ Miguel Horta 62208 - PL 23
 Rodrigo Duarte 60354 - PL 23
 
 Contribuições:
-David: tabuleiro.html, jogo-terminado.html, imagens 
-Miguel: login.html, registo.html, estatisticas.html, singleplayer.html, definicoes.html
-Rodrigo: index.html, menu.html
+David: login, registo, verificacoes e mensagens de erro, jogo singleplayer tabuleiro a 8x8, animacoes
+Miguel: jogo a 2 e tabuleiro a 10x10,  Deteção automática da impossibilidade de fazer jogadas, um pouco de descida de joias e reacao em cadeia
+Rodrigo: botao de dica, Verificação de alinhamentos verticais de joias, um pouco de estatisticas e jogo-terminado
 
 Percentagens: 
 David: 40 %
 Miguel: 40 %
 Rodrigo: 20 %
 
+Fizemos tudo menos isto:  Temas para tabuleiros,  Joias especiais, Segundo dispositivo de entrada,
+Fazer o máximo de pontos até ser atingido um limite de jogadas;
+Eliminar um mínimo de joias de cada tipo;
+Modo “Pokémon Shuffle”.
+
+O modo de jogo dificil 10x10 apenas ficou no jogo a 2
